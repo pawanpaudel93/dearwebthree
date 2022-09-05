@@ -43,12 +43,12 @@ export class Web3Deploy {
   private async modifyFile(path: string) {
     const content = await fsPromises.readFile(path, 'utf8');
     if (
-      /["'](\/.*?\..*?)["']/g.test(content) ||
-      /["'](\/.*?\..*?)["']/g.test(content)
+      /src=["'](\/.*?\..*?)["']/g.test(content) ||
+      /html=["'](\/.*?\..*?)["']/g.test(content)
     ) {
       const modifiedContent = content
-        .replace(/["'](\/.*?\..*?)["']/g, 'src=".$1"')
-        .replace(/["'](\/.*?\..*?)["']/g, 'href=".$1"');
+        .replace(/src=["'](\/.*?\..*?)["']/g, 'src=".$1"')
+        .replace(/html=["'](\/.*?\..*?)["']/g, 'href=".$1"');
       await fsPromises.writeFile(path, modifiedContent);
     }
   }
@@ -80,7 +80,7 @@ export class Web3Deploy {
     const onStoredChunk = (size) => {
       uploaded += size;
       const pct = totalSize / uploaded;
-      logger.info(`Uploading... ${pct.toFixed(2)}% complete`);
+      logger.info(`Uploading... ${(pct * 100).toFixed(2)}% complete`);
     };
     return await this.#client.put(files, {
       onRootCidReady,

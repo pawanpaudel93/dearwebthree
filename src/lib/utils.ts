@@ -103,7 +103,6 @@ const uploadFolder = async (cliConfig: Web3DeployConfig) => {
       const deployer = new Web3Deploy(cliConfig);
       const rootCid = await deployer.uploadFolder();
       const deployedURL = `https://${rootCid}.ipfs.w3s.link`;
-      logger.info(`Web app uploaded to ${deployedURL}`);
       const deployments = config.get('deployments', []) as Deployment[];
       deployments.push({
         name: path.basename(path.resolve(process.cwd())),
@@ -111,6 +110,7 @@ const uploadFolder = async (cliConfig: Web3DeployConfig) => {
         timestamp: new Date().toDateString(),
       });
       config.set('deployments', deployments);
+      logger.info(`Web app uploaded to ${deployedURL}`);
     } catch (e) {
       if (e.message === 'canceled') {
         logger.info('Exiting');
@@ -126,9 +126,6 @@ const uploadFolder = async (cliConfig: Web3DeployConfig) => {
 export const setup = (options: { apiKey: string }) => {
   logger.info('Setting up Web3.storage apiKey');
   const config = new Conf();
-  if (config.get('apiKey')) {
-    config.delete('apiKey');
-  }
   config.set('apiKey', options.apiKey);
   logger.info('Web3.storage apiKey is saved');
 };
