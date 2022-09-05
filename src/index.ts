@@ -1,2 +1,1 @@
-export * from './lib/async';
-export * from './lib/number';
+export { setup, deploy, deployments } from './lib/utils';
