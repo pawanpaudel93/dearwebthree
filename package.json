@@ -7,7 +7,13 @@
   "module": "build/module/index.js",
   "repository": "https://github.com/pawanpaudel93/dearwebthree",
   "license": "MIT",
-  "keywords": ["web3", "dearwebthree", "web3.storage", "ipfs", "filecoin"],
+  "keywords": [
+    "web3",
+    "dearwebthree",
+    "web3.storage",
+    "ipfs",
+    "filecoin"
+  ],
   "scripts": {
     "build": "run-p build:*",
     "build:main": "tsc -p tsconfig.json",

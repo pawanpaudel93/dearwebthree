@@ -21,7 +21,7 @@ export async function web3StorageDeploy(
   const files = await getFilesFromPath(config.folderPath);
   // show the root cid as soon as it's ready
   const onRootCidReady = (cid) => {
-    logger.info('Uploading files with cid:', cid);
+    logger.info('Deploying app with cid:', cid);
   };
 
   // when each chunk is stored, update the percentage complete and display
@@ -41,7 +41,7 @@ export async function web3StorageDeploy(
   const onStoredChunk = (size) => {
     uploaded += size;
     const pct = totalSize / uploaded;
-    logger.info(`Uploading... ${(pct * 100).toFixed(2)}% complete`);
+    logger.info(`Deploying... ${(pct * 100).toFixed(2)}% complete`);
   };
   return await client.put(files, {
     onRootCidReady,

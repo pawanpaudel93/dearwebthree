@@ -57,6 +57,13 @@ const runCommand = async (command: string) => {
 const detectFramework = async () => {
   const frameworks = await listFrameworks('.');
   if (frameworks.length > 0) {
+    if (
+      frameworks.length === 2 &&
+      /[svelte|vite]/g.test(frameworks[0].id) &&
+      /[svelte|vite]/g.test(frameworks[1].id)
+    ) {
+      return 'vite';
+    }
     return frameworks[0].id;
   }
   return '';
@@ -109,7 +116,7 @@ const deployWithConfig = async (cliConfig: Web3DeployConfig) => {
     try {
       const config = getConfig();
       const rootCid = await web3StorageDeploy(cliConfig);
-      const deployedURL = `https://${rootCid}.ipfs.w3s.link`;
+      const deployedURL = `https://w3s.link/ipfs/${rootCid}`;
       const deployments = config.get('deployments', []) as Deployment[];
       deployments.push({
         name: path.basename(path.resolve(process.cwd())),
