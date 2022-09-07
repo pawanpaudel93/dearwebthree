@@ -1,3 +1,3 @@
-# web3-deploy
+# dearwebthree
 
 A CLI to deploy web applications to Web3.storage and others.

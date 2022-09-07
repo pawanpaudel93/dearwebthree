@@ -1,13 +1,13 @@
 {
-  "name": "web3-deploy",
+  "name": "dearwebthree",
   "version": "0.0.1",
   "description": "A CLI to deploy web applications to Web3.storage and others.",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
-  "repository": "https://github.com/pawanpaudel93/web3-deploy",
+  "repository": "https://github.com/pawanpaudel93/dearwebthree",
   "license": "MIT",
-  "keywords": ["web3", "web3-deploy", "web3.storage", "ipfs", "filecoin"],
+  "keywords": ["web3", "dearwebthree", "web3.storage", "ipfs", "filecoin"],
   "scripts": {
     "build": "run-p build:*",
     "build:main": "tsc -p tsconfig.json",
@@ -109,6 +109,7 @@
     ]
   },
   "bin": {
-    "web3-deploy": "./build/main/cli.js"
+    "dearwebthree": "./build/main/cli.js",
+    "dw3": "./build/main/cli.js"
   }
 }

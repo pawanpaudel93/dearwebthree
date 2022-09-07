@@ -11,7 +11,7 @@ export type Web3DeployConfig = {
 };
 
 export const logger: Logger = new Logger({
-  name: 'web3-deploy',
+  name: 'dearwebthree',
   displayFilePath: 'hidden',
   displayFunctionName: false,
   displayDateTime: false,
