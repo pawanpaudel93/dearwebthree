@@ -1,11 +1,7 @@
 import { Logger } from 'tslog';
 import { getFilesFromPath, Web3Storage } from 'web3.storage';
 
-export type Web3DeployConfig = {
-  folderPath: string;
-  appType: 'react' | 'next' | 'vue' | 'nuxt' | 'vite' | '';
-  apiKey: string;
-};
+import { Web3DeployConfig } from './config';
 
 export const logger: Logger = new Logger({
   name: 'dearwebthree',

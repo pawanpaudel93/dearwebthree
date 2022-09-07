@@ -1,19 +1,18 @@
 #!/usr/bin/env node
 
-import fs from 'fs';
-
 import { Command } from 'commander';
 
+import { CLI_NAME, CLI_VERSION } from './lib/config';
 import { deploy, deployments, setup } from './lib/utils';
-const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
 const program = new Command();
 program
-  .name(packageJson.name)
+  .name(CLI_NAME)
   .description(
     'A CLI tool to deploy web apps to IPFS & Filecoin using web3.storage'
   )
-  .version(packageJson.version, '-v, --version', 'output the version number');
+  .version(CLI_VERSION, '-v, --version', 'output the version number');
+
 program
   .command('setup')
   .option('-k, --apiKey <key>', 'web3.storage API Key')

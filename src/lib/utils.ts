@@ -7,8 +7,8 @@ import glob from 'glob';
 import createJITI from 'jiti';
 import { exec } from 'promisify-child-process';
 
-import { getConfig } from './config';
-import { logger, Web3DeployConfig, web3StorageDeploy } from './deploy';
+import { getConfig, getDb, Web3DeployConfig } from './config';
+import { logger, web3StorageDeploy } from './deploy';
 const jiti = createJITI(__filename);
 
 const buildCommands = {
@@ -18,12 +18,6 @@ const buildCommands = {
   nuxt: 'npx nuxt generate',
   vite: 'npx vite build',
 };
-
-interface Deployment {
-  name: string;
-  timestamp: string;
-  URL: string;
-}
 
 const checkConfig = (cliConfig: Web3DeployConfig) => {
   const errors: string[] = [];
@@ -114,17 +108,20 @@ const buildApp = async (cliConfig: Web3DeployConfig) => {
 const deployWithConfig = async (cliConfig: Web3DeployConfig) => {
   if (fs.existsSync(cliConfig.folderPath)) {
     try {
-      const config = getConfig();
+      const db = getDb();
       const rootCid = await web3StorageDeploy(cliConfig);
       const deployedURL = `https://w3s.link/ipfs/${rootCid}`;
-      const deployments = config.get('deployments', []) as Deployment[];
-      deployments.push({
+      let deployments = db.getCollection('deployments');
+      if (deployments === null) {
+        deployments = db.addCollection('deployments');
+      }
+      deployments.insert({
         name: path.basename(path.resolve(process.cwd())),
         URL: deployedURL,
-        timestamp: new Date().toDateString(),
+        timestamp: new Date().getTime(),
       });
-      config.set('deployments', deployments);
       logger.info(`Web app uploaded to ${deployedURL}`);
+      db.close();
     } catch (e) {
       if (e.message === 'canceled') {
         logger.info('Exiting');
@@ -165,11 +162,5 @@ export const deploy = async (options: { build: boolean }) => {
 };
 
 export const deployments = () => {
-  const config = getConfig();
-  const deployments = config.get('deployments', []) as Deployment[];
-  if (deployments.length > 0) {
-    logger.info(JSON.stringify(deployments, null, 2));
-  } else {
-    logger.info('No deployments yet.');
-  }
+  getDb(true);
 };
