@@ -1,7 +1,7 @@
 {
   "name": "dearwebthree",
-  "version": "0.0.1",
-  "description": "A CLI to deploy web applications to Web3.storage and others.",
+  "version": "0.0.0",
+  "description": "A CLI to deploy web applications to Web3.storage.",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
@@ -99,7 +99,7 @@
         "src/": "build/main/"
       }
     },
-    "files": []
+    "files": ["!build/module/**"]
   },
   "config": {
     "commitizen": {
