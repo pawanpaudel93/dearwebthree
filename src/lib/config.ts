@@ -15,6 +15,10 @@ export type Web3DeployConfig = {
   apiKey: string;
 };
 
+export type Web3ArchiveConfig = {
+  apiKey: string;
+};
+
 export function getConfig() {
   return new Conf({
     projectName: CLI_NAME,
@@ -22,7 +26,7 @@ export function getConfig() {
   });
 }
 
-export function getDb(deploymentsCallback?: boolean) {
+export function getDb(deploymentsCallback?: boolean, type?: string) {
   const config = getConfig();
   const adapter = new lfsa();
   const defaultLokiConfig = {
@@ -37,25 +41,33 @@ export function getDb(deploymentsCallback?: boolean) {
           ...defaultLokiConfig,
           autoload: true,
           autoloadCallback: () => {
-            let deployments = db.getCollection('deployments');
-            if (deployments === null) {
-              deployments = db.addCollection('deployments');
+            console.log(type);
+            let collection = db.getCollection(type);
+            if (collection === null) {
+              collection = db.addCollection(type);
             }
-            deployments = deployments.find();
-            if (deployments.length > 0) {
+            collection = collection.find();
+            if (collection.length > 0) {
               logger.info(
                 JSON.stringify(
-                  deployments.map((deployment) => ({
-                    name: deployment.name,
-                    URL: deployment.URL,
-                    timestamp: deployment.timestamp,
-                  })),
+                  type === 'deployments'
+                    ? collection.map((deployment) => ({
+                        name: deployment.name,
+                        URL: deployment.URL,
+                        timestamp: deployment.timestamp,
+                      }))
+                    : collection.map((archive) => ({
+                        URL: archive.URL,
+                        title: archive.title,
+                        archivedURL: archive.archivedURL,
+                        timestamp: archive.timestamp,
+                      })),
                   null,
                   2
                 )
               );
             } else {
-              logger.info('No deployments yet.');
+              logger.info(`No ${type} yet.`);
             }
             db.close();
           },

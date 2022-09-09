@@ -1,166 +1,64 @@
 import fs from 'fs';
 import path from 'path';
 
-import { listFrameworks } from '@netlify/framework-info';
-import chalk from 'chalk';
-import glob from 'glob';
-import createJITI from 'jiti';
-import { exec } from 'promisify-child-process';
+import which from 'which';
 
-import { getConfig, getDb, Web3DeployConfig } from './config';
-import { logger, web3StorageDeploy } from './deploy';
-const jiti = createJITI(__filename);
+// Return location of chrome.exe file for a given Chrome directory (available: "Chrome", "Chrome SxS").
+function getChromeExe(chromeDirName) {
+  let windowsChromeDirectory, i, prefix;
+  const suffix = '\\Google\\' + chromeDirName + '\\Application\\chrome.exe';
+  const prefixes = [
+    process.env.LOCALAPPDATA,
+    process.env.PROGRAMFILES,
+    process.env['PROGRAMFILES(X86)'],
+  ];
 
-const buildCommands = {
-  react: 'npx react-scripts build',
-  next: 'npx next build && npx next export',
-  vue: 'npx vue-cli-service build',
-  nuxt: 'npx nuxt generate',
-  vite: 'npx vite build',
-};
-
-const checkConfig = (cliConfig: Web3DeployConfig) => {
-  const errors: string[] = [];
-  if (!cliConfig.apiKey) {
-    errors.push('Web3.storage apiKey is not setup');
-  }
-  if (errors.length > 0) {
-    throw new Error(chalk.red('-> ') + errors.join('\n' + chalk.red('-> ')));
-  }
-};
-
-const getAppConfig = (pattern: string, folderPath?: string) => {
-  if (!folderPath) {
-    const configFiles = glob.sync(path.join(process.cwd(), pattern));
-    if (configFiles.length > 0) {
-      const appConfig = jiti(configFiles[0]);
-      return appConfig.default ? appConfig.default : appConfig;
-    }
-  }
-  return {};
-};
-
-const runCommand = async (command: string) => {
-  logger.info('Running command: ' + chalk.gray(command));
-  const child = exec(command);
-  child.stdout.pipe(process.stdout);
-  child.stderr.on('data', (data) => console.log(data));
-  await child;
-};
-
-const detectFramework = async () => {
-  const frameworks = await listFrameworks('.');
-  if (frameworks.length > 0) {
-    if (
-      frameworks.length === 2 &&
-      /[svelte|vite]/g.test(frameworks[0].id) &&
-      /[svelte|vite]/g.test(frameworks[1].id)
-    ) {
-      return 'vite';
-    }
-    return frameworks[0].id;
-  }
-  return '';
-};
-
-const buildConfig = async (cliConfig: Web3DeployConfig) => {
-  const appType = await detectFramework();
-  cliConfig.appType = appType === 'create-react-app' ? 'react' : appType;
-  if (cliConfig.appType === 'react') {
-    cliConfig.folderPath = 'build';
-  } else if (cliConfig.appType === 'next') {
-    const appConfig = getAppConfig(
-      'next.cliConfig.{js,ts}',
-      cliConfig.folderPath
-    );
-    cliConfig.folderPath = appConfig.outDir ? appConfig.outDir : 'out';
-  } else if (cliConfig.appType === 'vue') {
-    const appConfig = getAppConfig(
-      'vue.cliConfig.{js,ts}',
-      cliConfig.folderPath
-    );
-    cliConfig.folderPath = appConfig.outputDir ? appConfig.outputDir : 'dist';
-  } else if (cliConfig.appType === 'nuxt') {
-    const appConfig = getAppConfig(
-      'nuxt.cliConfig.{js,ts}',
-      cliConfig.folderPath
-    );
-    cliConfig.folderPath = appConfig?.generate?.dir
-      ? appConfig?.generate?.dir
-      : 'dist';
-  } else if (cliConfig.appType === 'vite') {
-    const appConfig = getAppConfig(
-      'vite.cliConfig.{js,ts}',
-      cliConfig.folderPath
-    );
-    cliConfig.folderPath = appConfig?.build?.outDir
-      ? appConfig?.build?.outDir
-      : 'dist';
-  }
-};
-
-const buildApp = async (cliConfig: Web3DeployConfig) => {
-  if (cliConfig.appType) {
-    await runCommand(buildCommands[cliConfig.appType]);
-  }
-};
-
-const deployWithConfig = async (cliConfig: Web3DeployConfig) => {
-  if (fs.existsSync(cliConfig.folderPath)) {
+  for (i = 0; i < prefixes.length; i++) {
+    prefix = prefixes[i];
     try {
-      const db = getDb();
-      const rootCid = await web3StorageDeploy(cliConfig);
-      const deployedURL = `https://w3s.link/ipfs/${rootCid}`;
-      let deployments = db.getCollection('deployments');
-      if (deployments === null) {
-        deployments = db.addCollection('deployments');
+      windowsChromeDirectory = path.join(prefix, suffix);
+      fs.accessSync(windowsChromeDirectory);
+      return windowsChromeDirectory;
+    } catch (e) {}
+  }
+
+  return windowsChromeDirectory;
+}
+
+function getBin(commands) {
+  let bin, i;
+  for (i = 0; i < commands.length; i++) {
+    try {
+      if (which.sync(commands[i])) {
+        bin = commands[i];
+        break;
       }
-      deployments.insert({
-        name: path.basename(path.resolve(process.cwd())),
-        URL: deployedURL,
-        timestamp: new Date().getTime(),
-      });
-      logger.info(`Web app uploaded to ${deployedURL}`);
-      db.close();
     } catch (e) {
-      if (e.message === 'canceled') {
-        logger.info('Exiting');
-        return;
-      }
-      logger.error(e?.message ?? e);
+      //
     }
-  } else {
-    logger.error(`Folder path ${cliConfig.folderPath} does not exist`);
   }
-};
+  return bin;
+}
 
-export const setup = (options: { apiKey: string }) => {
-  logger.info('Setting up Web3.storage apiKey');
-  const config = getConfig();
-  config.set('apiKey', options.apiKey);
-  logger.info('Web3.storage apiKey is saved');
-};
-
-export const deploy = async (options: { build: boolean }) => {
+function getChromeDarwin(defaultPath) {
   try {
-    const config = getConfig();
-    const apiKey = config.get('apiKey', '') as string;
-    const cliConfig: Web3DeployConfig = {
-      folderPath: '',
-      appType: '',
-      apiKey,
-    };
-    await buildConfig(cliConfig);
-    checkConfig(cliConfig);
-    if (options.build) {
-      await buildApp(cliConfig);
-    }
-    await deployWithConfig(cliConfig);
+    const homePath = path.join(process.env.HOME, defaultPath);
+    fs.accessSync(homePath);
+    return homePath;
   } catch (e) {
-    logger.error(e?.message ?? e);
+    return defaultPath;
   }
-};
+}
 
-export const deployments = () => {
-  getDb(true);
-};
+export function getChromeExecutablePath() {
+  const platform = process.platform;
+  if (platform === 'linux') {
+    return getBin(['google-chrome', 'google-chrome-stable']);
+  } else if (platform === 'darwin') {
+    getChromeDarwin(
+      '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+    );
+  } else {
+    return getChromeExe('Chrome');
+  }
+}

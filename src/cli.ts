@@ -2,8 +2,8 @@
 
 import { Command } from 'commander';
 
+import { archive, archives, deploy, deployments, setup } from './lib/common';
 import { CLI_NAME, CLI_VERSION } from './lib/config';
-import { deploy, deployments, setup } from './lib/utils';
 
 const program = new Command();
 program
@@ -31,5 +31,15 @@ program
   .command('deployments')
   .description('print all your deployments')
   .action(deployments);
+
+program
+  .command('archive')
+  .argument('<url>', 'archive url to web3.storage')
+  .action(archive);
+
+program
+  .command('archives')
+  .description('print all your archives')
+  .action(archives);
 
 program.parse(process.argv);

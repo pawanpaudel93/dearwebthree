@@ -1,1 +1,1 @@
-export { setup, deploy, deployments } from './lib/utils';
+export { setup, deploy, deployments, archive } from './lib/common';
