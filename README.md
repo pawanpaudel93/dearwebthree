@@ -12,7 +12,7 @@ OR
 ```
 yarn add global dearwebthree
 ```
-> Currently supported are the applications using `React`, `Next`, `Vue`, `Nuxt` and `Vite`.
+> Currently supported are the applications using `React`, `Next`, `Vue`, `Nuxt`, `Svelte-Kit` and `Vite`.
 
 Run `dearwebthree` or `dw3` in terminal for more information regarding how to use the CLI.
 
@@ -24,4 +24,10 @@ dearwebthree setup --apiKey "<Web3.Storage_API_KEY>"
 Run this command in the app folder to deploy the app.
 ```
 dearwebthree deploy
+```
+
+### Archive
+Run this command to save single page html and screenshot for the given url.
+```
+dearwebthree archive <url>
 ```
