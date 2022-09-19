@@ -1,6 +1,6 @@
 # dearwebthree
 
-A CLI to deploy and archive apps to Web3.storage.
+A CLI to deploy and capture apps to Web3.storage.
 
 ### Installation
 ```
@@ -26,8 +26,8 @@ Run this command in the app folder to deploy the app.
 dearwebthree deploy
 ```
 
-### Archive
+### Capture
 Run this command to save single page html and screenshot for the given url.
 ```
-dearwebthree archive <url>
+dearwebthree capture <url>
 ```

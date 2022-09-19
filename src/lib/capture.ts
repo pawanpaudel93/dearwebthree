@@ -4,11 +4,11 @@ import { resolve } from 'path';
 import { directory } from 'tempy';
 import { getFilesFromPath, Web3Storage } from 'web3.storage';
 
-import { Web3ArchiveConfig } from './config';
+import { Web3CaptureConfig } from './config';
 import { runBrowser } from './single-file';
 import { getChromeExecutablePath } from './utils';
 
-export const archiveUrl = async (cliConfig: Web3ArchiveConfig, url: string) => {
+export const captureUrl = async (cliConfig: Web3CaptureConfig, url: string) => {
   const tempDirectory = directory();
   try {
     await runBrowser({

@@ -2,7 +2,7 @@
 
 import { Command } from 'commander';
 
-import { archive, archives, deploy, deployments, setup } from './lib/common';
+import { capture, captures, deploy, deployments, setup } from './lib/common';
 import { CLI_NAME, CLI_VERSION } from './lib/config';
 
 const program = new Command();
@@ -33,13 +33,13 @@ program
   .action(deployments);
 
 program
-  .command('archive')
-  .argument('<url>', 'archive url to web3.storage')
-  .action(archive);
+  .command('capture')
+  .argument('<url>', 'capture url to web3.storage')
+  .action(capture);
 
 program
-  .command('archives')
-  .description('print all your archives')
-  .action(archives);
+  .command('captures')
+  .description('print all your captures')
+  .action(captures);
 
 program.parse(process.argv);

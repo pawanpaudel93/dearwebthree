@@ -19,6 +19,7 @@ function getChromeExe(chromeDirName) {
       windowsChromeDirectory = path.join(prefix, suffix);
       fs.accessSync(windowsChromeDirectory);
       return windowsChromeDirectory;
+      // eslint-disable-next-line no-empty
     } catch (e) {}
   }
 

@@ -7,11 +7,11 @@ import glob from 'glob';
 import createJITI from 'jiti';
 import { exec } from 'promisify-child-process';
 
-import { archiveUrl } from './archive';
+import { captureUrl } from './capture';
 import {
   getConfig,
   getDb,
-  Web3ArchiveConfig,
+  Web3CaptureConfig,
   Web3DeployConfig,
 } from './config';
 import { logger, web3StorageDeploy } from './deploy';
@@ -25,7 +25,7 @@ const buildCommands = {
   vite: 'npx vite build',
 };
 
-const checkConfig = (cliConfig: Web3DeployConfig | Web3ArchiveConfig) => {
+const checkConfig = (cliConfig: Web3DeployConfig | Web3CaptureConfig) => {
   const errors: string[] = [];
   if (!cliConfig.apiKey) {
     errors.push('Web3.storage apiKey is not setup');
@@ -173,38 +173,38 @@ export const deployments = () => {
   getDb(true, 'deployments');
 };
 
-export const archive = async (url: string) => {
+export const capture = async (url: string) => {
   logger.info(`Archiving url: ${url}`);
   const config = getConfig();
   const apiKey = config.get('apiKey', '') as string;
-  const cliConfig: Web3ArchiveConfig = {
+  const cliConfig: Web3CaptureConfig = {
     apiKey,
   };
   checkConfig(cliConfig);
-  const { status, message, contentID, title } = await archiveUrl(
+  const { status, message, contentID, title } = await captureUrl(
     cliConfig,
     url
   );
   if (status === 'success') {
     const db = getDb();
-    const archivedURL = `https://w3s.link/ipfs/${contentID}`;
-    let archives = db.getCollection('archives');
-    if (archives === null) {
-      archives = db.addCollection('archives');
+    const capturedURL = `https://w3s.link/ipfs/${contentID}`;
+    let captures = db.getCollection('captures');
+    if (captures === null) {
+      captures = db.addCollection('captures');
     }
-    archives.insert({
+    captures.insert({
       URL: url,
       title,
-      archivedURL,
+      capturedURL,
       timestamp: new Date().getTime(),
     });
-    logger.info(`${url} archived to ${archivedURL}`);
+    logger.info(`${url} captured to ${capturedURL}`);
     db.close();
   } else {
     logger.error(message);
   }
 };
 
-export const archives = () => {
-  getDb(true, 'archives');
+export const captures = () => {
+  getDb(true, 'captures');
 };

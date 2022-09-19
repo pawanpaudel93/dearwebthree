@@ -15,7 +15,7 @@ export type Web3DeployConfig = {
   apiKey: string;
 };
 
-export type Web3ArchiveConfig = {
+export type Web3CaptureConfig = {
   apiKey: string;
 };
 
@@ -56,11 +56,11 @@ export function getDb(deploymentsCallback?: boolean, type?: string) {
                         URL: deployment.URL,
                         timestamp: deployment.timestamp,
                       }))
-                    : collection.map((archive) => ({
-                        URL: archive.URL,
-                        title: archive.title,
-                        archivedURL: archive.archivedURL,
-                        timestamp: archive.timestamp,
+                    : collection.map((capture) => ({
+                        URL: capture.URL,
+                        title: capture.title,
+                        capturedURL: capture.capturedURL,
+                        timestamp: capture.timestamp,
                       })),
                   null,
                   2
