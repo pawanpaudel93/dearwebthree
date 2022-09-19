@@ -6,6 +6,7 @@ import chalk from 'chalk';
 import glob from 'glob';
 import createJITI from 'jiti';
 import { exec } from 'promisify-child-process';
+import { v4 as uuidv4 } from 'uuid';
 
 import { captureUrl } from './capture';
 import {
@@ -124,8 +125,9 @@ const deployWithConfig = async (cliConfig: Web3DeployConfig) => {
         deployments = db.addCollection('deployments');
       }
       deployments.insert({
+        id: uuidv4(),
         name: path.basename(path.resolve(process.cwd())),
-        URL: deployedURL,
+        url: deployedURL,
         timestamp: new Date().getTime(),
       });
       logger.info(`Web app uploaded to ${deployedURL}`);
@@ -187,18 +189,19 @@ export const capture = async (url: string) => {
   );
   if (status === 'success') {
     const db = getDb();
-    const capturedURL = `https://w3s.link/ipfs/${contentID}`;
+    const capturedUrl = `https://w3s.link/ipfs/${contentID}`;
     let captures = db.getCollection('captures');
     if (captures === null) {
       captures = db.addCollection('captures');
     }
     captures.insert({
-      URL: url,
+      id: uuidv4(),
+      url,
       title,
-      capturedURL,
+      capturedUrl,
       timestamp: new Date().getTime(),
     });
-    logger.info(`${url} captured to ${capturedURL}`);
+    logger.info(`${url} captured to ${capturedUrl}`);
     db.close();
   } else {
     logger.error(message);

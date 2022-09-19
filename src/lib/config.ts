@@ -52,14 +52,16 @@ export function getDb(deploymentsCallback?: boolean, type?: string) {
                 JSON.stringify(
                   type === 'deployments'
                     ? collection.map((deployment) => ({
+                        id: deployment.id,
                         name: deployment.name,
-                        URL: deployment.URL,
+                        url: deployment.url,
                         timestamp: deployment.timestamp,
                       }))
                     : collection.map((capture) => ({
-                        URL: capture.URL,
+                        id: capture.id,
+                        url: capture.url,
                         title: capture.title,
-                        capturedURL: capture.capturedURL,
+                        capturedUrl: capture.capturedUrl,
                         timestamp: capture.timestamp,
                       })),
                   null,

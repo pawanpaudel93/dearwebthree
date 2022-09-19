@@ -58,6 +58,7 @@
     "single-file-cli": "https://github.com/pawanpaudel93/single-file-cli.git",
     "tempy": "1.0.1",
     "tslog": "^3.3.3",
+    "uuid": "^9.0.0",
     "web3.storage": "^4.4.0",
     "which": "^2.0.2"
   },
