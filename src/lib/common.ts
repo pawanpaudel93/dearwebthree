@@ -6,16 +6,18 @@ import chalk from 'chalk';
 import glob from 'glob';
 import createJITI from 'jiti';
 import { exec } from 'promisify-child-process';
+import prompts from 'prompts';
 import { v4 as uuidv4 } from 'uuid';
 
 import { captureUrl } from './capture';
 import {
   getConfig,
   getDb,
+  logger,
   Web3CaptureConfig,
   Web3DeployConfig,
 } from './config';
-import { logger, web3StorageDeploy } from './deploy';
+import { moralisIPFSDeploy, web3StorageDeploy } from './deploy';
 const jiti = createJITI(__filename);
 
 const buildCommands = {
@@ -26,13 +28,24 @@ const buildCommands = {
   vite: 'npx vite build',
 };
 
-const checkConfig = (cliConfig: Web3DeployConfig | Web3CaptureConfig) => {
+const checkConfig = async (
+  cliConfig: Web3DeployConfig | Web3CaptureConfig,
+  isMoralis = false
+) => {
   const errors: string[] = [];
-  if (!cliConfig.apiKey) {
-    errors.push('Web3.storage apiKey is not setup');
+  const service = isMoralis ? 'Moralis' : 'Web3.Storage';
+  if (!cliConfig.apiKey[isMoralis ? 'moralis' : 'web3Storage']) {
+    errors.push(`${service} apiKey is not setup`);
   }
+
   if (errors.length > 0) {
-    throw new Error(chalk.red('-> ') + errors.join('\n' + chalk.red('-> ')));
+    logger.error(chalk.red('-> ') + errors.join('\n' + chalk.red('-> ')));
+    const response = await prompts({
+      type: 'string',
+      name: 'apiKey',
+      message: `Enter your ${service} API Key:`,
+    });
+    setup({ apiKey: response.apiKey, moralis: isMoralis });
   }
 };
 
@@ -59,11 +72,11 @@ const detectFramework = async () => {
   const frameworks = await listFrameworks('.');
   if (frameworks.length > 0) {
     if (
-      (frameworks.length === 2 &&
-        /[svelte|vite]/g.test(frameworks[0].id) &&
+      frameworks.length === 2 &&
+      ((/[svelte|vite]/g.test(frameworks[0].id) &&
         /[svelte|vite]/g.test(frameworks[1].id)) ||
-      (/[svelte-kit|vite]/g.test(frameworks[0].id) &&
-        /[svelte-kit|vite]/g.test(frameworks[1].id))
+        (/[svelte-kit|vite]/g.test(frameworks[0].id) &&
+          /[svelte-kit|vite]/g.test(frameworks[1].id)))
     ) {
       return 'vite';
     }
@@ -114,11 +127,19 @@ const buildApp = async (cliConfig: Web3DeployConfig) => {
   }
 };
 
-const deployWithConfig = async (cliConfig: Web3DeployConfig) => {
+const deployWithConfig = async (
+  cliConfig: Web3DeployConfig,
+  isMoralis: boolean
+) => {
   if (fs.existsSync(cliConfig.folderPath)) {
     try {
       const db = getDb();
-      const rootCid = await web3StorageDeploy(cliConfig);
+      let rootCid: string;
+      if (isMoralis) {
+        rootCid = await moralisIPFSDeploy(cliConfig);
+      } else {
+        rootCid = await web3StorageDeploy(cliConfig);
+      }
       const deployedURL = `https://w3s.link/ipfs/${rootCid}`;
       let deployments = db.getCollection('deployments');
       if (deployments === null) {
@@ -144,29 +165,44 @@ const deployWithConfig = async (cliConfig: Web3DeployConfig) => {
   }
 };
 
-export const setup = (options: { apiKey: string }) => {
-  logger.info('Setting up Web3.storage apiKey');
+export const setup = (options: { apiKey: string; moralis: boolean }) => {
+  const service = options.moralis ? 'Moralis' : 'Web3.Storage';
+  const key = options.moralis ? 'moralis' : 'web3Storage';
+  logger.info(`Setting up ${service} apiKey`);
   const config = getConfig();
-  config.set('apiKey', options.apiKey);
-  logger.info('Web3.storage apiKey is saved');
+  const apiKey = config.get('apiKey', undefined);
+  if (apiKey) {
+    config.set('apiKey', {
+      ...(apiKey as { moralis?: string; web3Storage?: string }),
+      [key]: options.apiKey,
+    });
+  } else {
+    config.set('apiKey', {
+      [key]: options.apiKey,
+    });
+  }
+  logger.info(`${service} apiKey is saved`);
 };
 
-export const deploy = async (options: { build: boolean }) => {
+export const deploy = async (options: { build: boolean; moralis: boolean }) => {
   try {
     const config = getConfig();
-    const apiKey = config.get('apiKey', '') as string;
+    const apiKey = config.get('apiKey', { moralis: '', web3Storage: '' });
     const cliConfig: Web3DeployConfig = {
       folderPath: '',
       appType: '',
       apiKey,
     };
     await buildConfig(cliConfig);
-    checkConfig(cliConfig);
+    await checkConfig(cliConfig, options.moralis);
     if (options.build) {
       await buildApp(cliConfig);
+    } else {
+      logger.info('Deploying without building the app...');
     }
-    await deployWithConfig(cliConfig);
+    await deployWithConfig(cliConfig, options.moralis);
   } catch (e) {
+    console.log(e);
     logger.error(e?.message ?? e);
   }
 };
@@ -175,17 +211,18 @@ export const deployments = () => {
   getDb(true, 'deployments');
 };
 
-export const capture = async (url: string) => {
-  logger.info(`Archiving url: ${url}`);
+export const capture = async (url: string, options: { moralis: boolean }) => {
+  logger.info(`Capturing url: ${url}`);
   const config = getConfig();
-  const apiKey = config.get('apiKey', '') as string;
+  const apiKey = config.get('apiKey');
   const cliConfig: Web3CaptureConfig = {
     apiKey,
   };
-  checkConfig(cliConfig);
+  await checkConfig(cliConfig);
   const { status, message, contentID, title } = await captureUrl(
     cliConfig,
-    url
+    url,
+    options.moralis
   );
   if (status === 'success') {
     const db = getDb();

@@ -6,11 +6,16 @@ import { getFilesFromPath, Web3Storage } from 'web3.storage';
 
 import { Web3CaptureConfig } from './config';
 import { runBrowser } from './single-file';
-import { getChromeExecutablePath } from './utils';
+import { getChromeExecutablePath, moralisIPFSUpload } from './utils';
 
-export const captureUrl = async (cliConfig: Web3CaptureConfig, url: string) => {
+export const captureUrl = async (
+  cliConfig: Web3CaptureConfig,
+  url: string,
+  isMoralis: boolean
+) => {
   const tempDirectory = directory();
   try {
+    let cid: string;
     await runBrowser({
       browserArgs:
         '["--no-sandbox", "--window-size=1920,1080", "--start-maximized"]',
@@ -19,16 +24,20 @@ export const captureUrl = async (cliConfig: Web3CaptureConfig, url: string) => {
       basePath: tempDirectory,
       output: resolve(tempDirectory, 'index.html'),
     });
-    const client = new Web3Storage({
-      token: cliConfig.apiKey,
-      endpoint: new URL('https://api.web3.storage'),
-    });
-    const files = await getFilesFromPath(tempDirectory);
-    // console.log(files);
-    const cid = await client.put(files, {
-      wrapWithDirectory: false,
-      maxRetries: 3,
-    });
+    if (isMoralis) {
+      cid = await moralisIPFSUpload(tempDirectory, cliConfig.apiKey.moralis);
+    } else {
+      const client = new Web3Storage({
+        token: cliConfig.apiKey.web3Storage,
+        endpoint: new URL('https://api.web3.storage'),
+      });
+      const files = await getFilesFromPath(tempDirectory);
+      // console.log(files);
+      cid = await client.put(files, {
+        wrapWithDirectory: false,
+        maxRetries: 3,
+      });
+    }
     const data = await (
       await fsPromises.readFile(resolve(tempDirectory, 'metadata.json'))
     ).toString();

@@ -3,8 +3,7 @@ import path from 'path';
 import Conf from 'conf';
 import loki from 'lokijs';
 import lfsa from 'lokijs/src/loki-fs-structured-adapter.js';
-
-import { logger } from './deploy';
+import { Logger } from 'tslog';
 
 export const CLI_NAME = 'dearwebthree';
 export const CLI_VERSION = '0.0.1';
@@ -12,12 +11,25 @@ export const CLI_VERSION = '0.0.1';
 export type Web3DeployConfig = {
   folderPath: string;
   appType: 'react' | 'next' | 'vue' | 'nuxt' | 'vite' | '';
-  apiKey: string;
+  apiKey: {
+    web3Storage?: string;
+    moralis?: string;
+  };
 };
 
 export type Web3CaptureConfig = {
-  apiKey: string;
+  apiKey: {
+    web3Storage?: string;
+    moralis?: string;
+  };
 };
+
+export const logger: Logger = new Logger({
+  name: 'dearwebthree',
+  displayFilePath: 'hidden',
+  displayFunctionName: false,
+  displayDateTime: false,
+});
 
 export function getConfig() {
   return new Conf({

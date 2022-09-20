@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
+import glob from 'glob';
+import Moralis from 'moralis';
 import which from 'which';
 
 // Return location of chrome.exe file for a given Chrome directory (available: "Chrome", "Chrome SxS").
@@ -62,4 +64,23 @@ export function getChromeExecutablePath() {
   } else {
     return getChromeExe('Chrome');
   }
+}
+
+export async function moralisIPFSUpload(
+  folderPath: string,
+  apiKey: string
+): Promise<string> {
+  const files = glob.sync(path.join(folderPath, `/**/*.*`));
+  const abi = files.map((file) => ({
+    path: file.replace(path.join(folderPath, '/').toString(), ''),
+    content: fs.readFileSync(file, { encoding: 'base64' }),
+  }));
+  await Moralis.start({
+    apiKey,
+  });
+
+  const response = await Moralis.EvmApi.ipfs.uploadFolder({
+    abi,
+  });
+  return response.result[0].path.match('/ipfs/(.*?)/')[1];
 }

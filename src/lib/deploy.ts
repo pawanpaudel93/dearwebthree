@@ -1,19 +1,12 @@
-import { Logger } from 'tslog';
 import { getFilesFromPath, Web3Storage } from 'web3.storage';
 
-import { Web3DeployConfig } from './config';
-
-export const logger: Logger = new Logger({
-  name: 'dearwebthree',
-  displayFilePath: 'hidden',
-  displayFunctionName: false,
-  displayDateTime: false,
-});
+import { logger, Web3DeployConfig } from './config';
+import { moralisIPFSUpload } from './utils';
 
 export async function web3StorageDeploy(
   config: Web3DeployConfig
 ): Promise<string> {
-  const client = new Web3Storage({ token: config.apiKey });
+  const client = new Web3Storage({ token: config.apiKey.web3Storage });
   const files = await getFilesFromPath(config.folderPath);
   // show the root cid as soon as it's ready
   const onRootCidReady = (cid) => {
@@ -44,4 +37,10 @@ export async function web3StorageDeploy(
     onStoredChunk,
     wrapWithDirectory: false,
   });
+}
+
+export async function moralisIPFSDeploy(
+  config: Web3DeployConfig
+): Promise<string> {
+  return await moralisIPFSUpload(config.folderPath, config.apiKey.moralis);
 }
