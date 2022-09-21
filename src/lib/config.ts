@@ -35,6 +35,14 @@ export const logger: Logger = new Logger({
   displayDateTime: false,
 });
 
+export const buildCommands = {
+  react: 'npx react-scripts build',
+  next: 'npx next build && npx next export',
+  vue: 'npx vue-cli-service build',
+  nuxt: 'npx nuxt generate',
+  vite: 'npx vite build',
+};
+
 export function getConfig() {
   return new Conf({
     projectName: CLI_NAME,

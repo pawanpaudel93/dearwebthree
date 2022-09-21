@@ -106,11 +106,13 @@ export function arrayBufferToHexString(buf: Iterable<number>): string {
   return hex.join('');
 }
 
-export function checkFileExists(file) {
-  return fs.promises
-    .access(file, fs.constants.F_OK)
-    .then(() => true)
-    .catch(() => false);
+export async function checkFileExists(file) {
+  try {
+    await fs.promises.access(file, fs.constants.F_OK);
+    return true;
+  } catch (error) {
+    return false;
+  }
 }
 
 export const detectFramework = async () => {

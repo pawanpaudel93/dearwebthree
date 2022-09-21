@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getFilesFromPath, Web3Storage } from 'web3.storage';
 
 import {
+  buildCommands,
   checkConfig,
   getConfig,
   getDb,
@@ -58,14 +59,6 @@ export async function moralisIPFSDeploy(
 ): Promise<string> {
   return await moralisIPFSUpload(config.folderPath, config.apiKey.moralis);
 }
-
-const buildCommands = {
-  react: 'npx react-scripts build',
-  next: 'npx next build && npx next export',
-  vue: 'npx vue-cli-service build',
-  nuxt: 'npx nuxt generate',
-  vite: 'npx vite build',
-};
 
 const runCommand = async (command: string) => {
   logger.info('Running command: ' + chalk.gray(command));
