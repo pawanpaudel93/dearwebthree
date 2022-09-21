@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "build": "run-p build:*",
-    "build:main": "tsc -p tsconfig.json && cp src/actions build/main/actions -r",
+    "build:main": "tsc -p tsconfig.json && cp src/actions build/main/ -r",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "fix:lint": "eslint src --ext .ts --fix",

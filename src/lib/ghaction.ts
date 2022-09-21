@@ -2,6 +2,7 @@ import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
 
+import prompts from 'prompts';
 import * as Name from 'w3name';
 
 import { buildCommands } from './config';
@@ -32,6 +33,7 @@ export const createName = async () => {
           2
         )
       );
+      logger.info(`${W3NAME_JSON} file created.`);
     }
     logger.info(`${W3NAME_JSON} file already exists`);
   } catch (error) {
@@ -41,6 +43,12 @@ export const createName = async () => {
 
 export const initDeploymentAction = async () => {
   try {
+    const response = await prompts({
+      type: 'confirm',
+      name: 'isIPNS',
+      message: 'Use w3name for IPNS?',
+      initial: false,
+    });
     logger.info('Saving deployments github action...');
     const savePath = '.github/workflows/';
     const appType: string = await detectFramework();
@@ -50,7 +58,9 @@ export const initDeploymentAction = async () => {
       await fsPromises.readFile(
         path.join(
           path.dirname(fs.realpathSync(__dirname)),
-          'actions/deployment.yml'
+          `actions/${
+            response.isIPNS ? 'deployment' : 'deployment_without_ipns'
+          }.yml`
         )
       )
     ).toString();
@@ -75,6 +85,24 @@ export const initDeploymentAction = async () => {
       });
     }
     await fsPromises.writeFile(savePath + 'deployment.yml', DEPLOYMENT_ACTION);
+
+    if (response.isIPNS) {
+      await createName();
+      logger.info(
+        '\n' +
+          [
+            '1. Set github action secrets with key WEB3_STORAGE_TOKEN for web3.storage API key',
+            '2. Set github action secrets with key W3NAME_SIGNING_KEY for w3name from w3name.json',
+          ].join('\n')
+      );
+    } else {
+      logger.info(
+        '\n' +
+          [
+            '1. Set github action secrets with key WEB3_STORAGE_TOKEN for web3.storage API key',
+          ].join('\n')
+      );
+    }
     logger.info('Saved successfully...');
   } catch (error) {
     logger.error(getErrorMessage(error));
@@ -83,9 +111,20 @@ export const initDeploymentAction = async () => {
 
 export const initCaptureAction = async () => {
   try {
+    const response = await prompts({
+      type: 'text',
+      name: 'value',
+      message:
+        'Cron Expression for schedule. Default runs everyday at 00:00 AM',
+      initial: '0 0 * * *',
+      validate: (value) =>
+        typeof value === 'string' && value.trim() !== ''
+          ? true
+          : 'Cron Expression is Required',
+    });
     logger.info('Saving Capture github action...');
     const savePath = '.github/workflows/';
-    const CAPTURE_ACTION = (
+    let CAPTURE_ACTION = (
       await fsPromises.readFile(
         path.join(
           path.dirname(fs.realpathSync(__dirname)),
@@ -99,7 +138,14 @@ export const initCaptureAction = async () => {
         recursive: true,
       });
     }
+    CAPTURE_ACTION = CAPTURE_ACTION.replace(/CRON_EXPRESSION/g, response.value);
     await fsPromises.writeFile(savePath + 'capture.yml', CAPTURE_ACTION);
+    logger.info(
+      '\n' +
+        [
+          '1. Set github action secrets with key WEB3_STORAGE_TOKEN for web3.storage API key',
+        ].join('\n')
+    );
     logger.info('Saved successfully');
   } catch (error) {
     logger.error(getErrorMessage(error));
