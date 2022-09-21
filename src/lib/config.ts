@@ -1,8 +1,7 @@
 import path from 'path';
 
 import Conf from 'conf';
-import loki from 'lokijs';
-import lfsa from 'lokijs/src/loki-fs-structured-adapter.js';
+import { getCollection, getDB, initDB } from 'lokijs-promise';
 import { Logger } from 'tslog';
 
 export const CLI_NAME = 'dearwebthree';
@@ -38,55 +37,45 @@ export function getConfig() {
   });
 }
 
-export function getDb(deploymentsCallback?: boolean, type?: string) {
+export async function getDb() {
   const config = getConfig();
-  const adapter = new lfsa();
-  const defaultLokiConfig = {
-    adapter,
-    autosave: true,
-    autosaveInterval: 4000,
-  };
-  const db = new loki(
+  initDB(
     path.resolve(path.dirname(path.resolve(config.path)), 'database.json'),
-    deploymentsCallback
-      ? {
-          ...defaultLokiConfig,
-          autoload: true,
-          autoloadCallback: () => {
-            console.log(type);
-            let collection = db.getCollection(type);
-            if (collection === null) {
-              collection = db.addCollection(type);
-            }
-            collection = collection.find();
-            if (collection.length > 0) {
-              logger.info(
-                JSON.stringify(
-                  type === 'deployments'
-                    ? collection.map((deployment) => ({
-                        id: deployment.id,
-                        name: deployment.name,
-                        url: deployment.url,
-                        timestamp: deployment.timestamp,
-                      }))
-                    : collection.map((capture) => ({
-                        id: capture.id,
-                        url: capture.url,
-                        title: capture.title,
-                        capturedUrl: capture.capturedUrl,
-                        timestamp: capture.timestamp,
-                      })),
-                  null,
-                  2
-                )
-              );
-            } else {
-              logger.info(`No ${type} yet.`);
-            }
-            db.close();
-          },
-        }
-      : defaultLokiConfig
+    4000
   );
-  return db;
+  return await getDB();
+}
+
+export async function getDbData(type?: string) {
+  const db = await getDb();
+  let collection = await getCollection(type);
+  collection = collection.find();
+  let output: (string | boolean)[];
+  if (collection.length > 0) {
+    output = [
+      JSON.stringify(
+        type === 'deployments'
+          ? collection.map((deployment) => ({
+              id: deployment.id,
+              name: deployment.name,
+              url: deployment.url,
+              timestamp: deployment.timestamp,
+            }))
+          : collection.map((capture) => ({
+              id: capture.id,
+              url: capture.url,
+              title: capture.title,
+              capturedUrl: capture.capturedUrl,
+              timestamp: capture.timestamp,
+            })),
+        null,
+        2
+      ),
+      true,
+    ];
+  } else {
+    output = [`No ${type} yet.`, false];
+  }
+  db.close();
+  return output;
 }

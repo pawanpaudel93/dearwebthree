@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { join } from 'path';
 
 import { listFrameworks } from '@netlify/framework-info';
 import chalk from 'chalk';
@@ -9,15 +10,18 @@ import { exec } from 'promisify-child-process';
 import prompts from 'prompts';
 import { v4 as uuidv4 } from 'uuid';
 
+import { saveToLocal } from './backup';
 import { captureUrl } from './capture';
 import {
   getConfig,
   getDb,
+  getDbData,
   logger,
   Web3CaptureConfig,
   Web3DeployConfig,
 } from './config';
 import { moralisIPFSDeploy, web3StorageDeploy } from './deploy';
+import { getErrorMessage } from './utils';
 const jiti = createJITI(__filename);
 
 const buildCommands = {
@@ -133,7 +137,7 @@ const deployWithConfig = async (
 ) => {
   if (fs.existsSync(cliConfig.folderPath)) {
     try {
-      const db = getDb();
+      const db = await getDb();
       let rootCid: string;
       if (isMoralis) {
         rootCid = await moralisIPFSDeploy(cliConfig);
@@ -207,8 +211,13 @@ export const deploy = async (options: { build: boolean; moralis: boolean }) => {
   }
 };
 
-export const deployments = () => {
-  getDb(true, 'deployments');
+export const deployments = async () => {
+  try {
+    const data = await getDbData('deployments');
+    logger.info(data);
+  } catch (error) {
+    logger.info(getErrorMessage(error));
+  }
 };
 
 export const capture = async (url: string, options: { moralis: boolean }) => {
@@ -225,7 +234,7 @@ export const capture = async (url: string, options: { moralis: boolean }) => {
     options.moralis
   );
   if (status === 'success') {
-    const db = getDb();
+    const db = await getDb();
     const capturedUrl = `https://w3s.link/ipfs/${contentID}`;
     let captures = db.getCollection('captures');
     if (captures === null) {
@@ -245,6 +254,28 @@ export const capture = async (url: string, options: { moralis: boolean }) => {
   }
 };
 
-export const captures = () => {
-  getDb(true, 'captures');
+export const captures = async () => {
+  try {
+    const data = await getDbData('captures');
+    logger.info(data);
+  } catch (error) {
+    logger.info(getErrorMessage(error));
+  }
+};
+
+export const backup = async (options: { path: string; type: string }) => {
+  options.path = /json/gi.test(options.path)
+    ? options.path
+    : join(options.path, `${options.type}.json`);
+  logger.info(`Saving ${options.type} to ${options.path}`);
+  try {
+    const [data, dataPresent] = await saveToLocal(options);
+    if (!dataPresent) {
+      logger.info(data);
+    } else {
+      logger.info('Saved!!!');
+    }
+  } catch (error) {
+    logger.error(getErrorMessage(error));
+  }
 };

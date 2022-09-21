@@ -2,7 +2,14 @@
 
 import { Command } from 'commander';
 
-import { capture, captures, deploy, deployments, setup } from './lib/common';
+import {
+  backup,
+  capture,
+  captures,
+  deploy,
+  deployments,
+  setup,
+} from './lib/common';
 import { CLI_NAME, CLI_VERSION, getConfig, logger } from './lib/config';
 
 const program = new Command();
@@ -15,7 +22,7 @@ program
 
 program
   .command('setup')
-  .option('-k, --apiKey <key>', 'web3.storage API Key')
+  .requiredOption('-k, --apiKey <key>', 'web3.storage API Key')
   .option('--moralis', 'setup Moralis API Key')
   .action(setup);
 
@@ -36,7 +43,7 @@ program
 
 program
   .command('capture')
-  .argument('<url>', 'capture url to web3.storage')
+  .requiredOption('<url>', 'capture url to web3.storage')
   .option('--moralis', 'capture url to IPFS using Moralis')
   .action(capture);
 
@@ -50,7 +57,18 @@ program
   .description('print config path')
   .action(() => {
     const config = getConfig();
-    logger.info('Config is saved at: ' + config.path);
+    logger.info('Config path: ' + config.path);
   });
+
+program
+  .command('backup')
+  .description('backup deployments and captures information')
+  .requiredOption('-p, --path <path>', 'save to local path')
+  .option(
+    '-t, --type <type>',
+    'deployments or captures to backup',
+    'deployments'
+  )
+  .action(backup);
 
 program.parse(process.argv);

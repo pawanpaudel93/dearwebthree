@@ -1742,6 +1742,11 @@ blockstore-core@^1.0.2:
     it-take "^1.0.1"
     multiformats "^9.4.7"
 
+bluebird@3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.1.tgz#d9551f9de98f1fcda1e683d17ee91a0602ee2eb9"
+  integrity sha512-MKiLiV+I1AA596t9w1sQJ8jkiSr5+ZKi0WKrYGUn6d1Fx+Ij4tIj+m2WMQSGczs5jZVxV339chE8iwk6F64wjA==
+
 blueimp-md5@^2.10.0:
   version "2.19.0"
   resolved "https://registry.yarnpkg.com/blueimp-md5/-/blueimp-md5-2.19.0.tgz#b53feea5498dcb53dc6ec4b823adb84b729c4af0"
@@ -5310,10 +5315,18 @@ log-symbols@^4.1.0:
     chalk "^4.1.0"
     is-unicode-supported "^0.1.0"
 
-lokijs@^1.5.12:
-  version "1.5.12"
-  resolved "https://registry.yarnpkg.com/lokijs/-/lokijs-1.5.12.tgz#cb55b37009bdf09ee7952a6adddd555b893653a0"
-  integrity sha512-Q5ALD6JiS6xAUWCwX3taQmgwxyveCtIIuL08+ml0nHwT3k0S/GIFJN+Hd38b1qYIMaE5X++iqsqWVksz7SYW+Q==
+lokijs-promise@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/lokijs-promise/-/lokijs-promise-1.0.4.tgz#6fc9bf6fd059b71892e0579d39eb263a57c2faa3"
+  integrity sha512-c2nyZLw0AkVtYQVKtq2dh1DbUijEw88hMXFh85SOcyViNFUUXO9djS6HrI0CTHIPwapP/zCBv32pq0j1IVkB8g==
+  dependencies:
+    bluebird "3.5.1"
+    lokijs "1.5.5"
+
+lokijs@1.5.5:
+  version "1.5.5"
+  resolved "https://registry.yarnpkg.com/lokijs/-/lokijs-1.5.5.tgz#1c21f82af7579037fade7b9e4813485c23708bb6"
+  integrity sha512-ZTtuyUBxSqkEmgIgEgfxBTnW2UxQsdh1Tm1b4QxKjm86bsDQJSN1AWZ+awspdjC7RWjwjbfI9LNL1NmtTJkVyA==
 
 long@^4.0.0:
   version "4.0.0"
