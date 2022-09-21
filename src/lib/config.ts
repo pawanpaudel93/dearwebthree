@@ -1,8 +1,13 @@
 import path from 'path';
 
+import chalk from 'chalk';
 import Conf from 'conf';
+import glob from 'glob';
+import createJITI from 'jiti';
 import { getCollection, getDB, initDB } from 'lokijs-promise';
+import prompts from 'prompts';
 import { Logger } from 'tslog';
+const jiti = createJITI(__filename);
 
 export const CLI_NAME = 'dearwebthree';
 export const CLI_VERSION = '0.0.1';
@@ -36,6 +41,74 @@ export function getConfig() {
     projectVersion: CLI_VERSION,
   });
 }
+
+export const setup = (options: { apiKey: string; service: string }) => {
+  const service = options.service === 'moralis' ? 'Moralis' : 'Web3.Storage';
+  const key = options.service === 'moralis' ? 'moralis' : 'web3Storage';
+  logger.info(`Setting up ${service} apiKey`);
+  const config = getConfig();
+  const apiKey = config.get('apiKey', undefined);
+  if (apiKey) {
+    config.set('apiKey', {
+      ...(apiKey as { moralis?: string; web3Storage?: string }),
+      [key]: options.apiKey,
+    });
+  } else {
+    config.set('apiKey', {
+      [key]: options.apiKey,
+    });
+  }
+  logger.info(`${service} apiKey is saved`);
+};
+
+export const checkConfig = async (
+  cliConfig: Web3DeployConfig | Web3CaptureConfig,
+  service: string
+) => {
+  const errors: string[] = [];
+  const key = service === 'moralis' ? 'moralis' : 'web3Storage';
+  if (!cliConfig.apiKey[key]) {
+    errors.push(`${service} apiKey is not setup`);
+  }
+
+  if (errors.length > 0) {
+    logger.error(chalk.red('-> ') + errors.join('\n' + chalk.red('-> ')));
+    const response = await prompts({
+      type: 'string',
+      name: 'apiKey',
+      message: `Enter your ${service} API Key:`,
+    });
+    setup({ apiKey: response.apiKey, service });
+  }
+};
+
+const getAppConfig = (pattern: string) => {
+  const configFiles = glob.sync(path.join(process.cwd(), pattern));
+  if (configFiles.length > 0) {
+    const appConfig = jiti(configFiles[0]);
+    return appConfig.default ? appConfig.default : appConfig;
+  }
+  return {};
+};
+
+export const getDeploymentFolder = async (appType: string) => {
+  if (appType === 'react') {
+    return 'build';
+  } else if (appType === 'next') {
+    const appConfig = getAppConfig('next.config.{js,ts}');
+    return appConfig.outDir ? appConfig.outDir : 'out';
+  } else if (appType === 'vue') {
+    const appConfig = getAppConfig('vue.config.{js,ts}');
+    return appConfig.outputDir ? appConfig.outputDir : 'dist';
+  } else if (appType === 'nuxt') {
+    const appConfig = getAppConfig('nuxt.config.{js,ts}');
+    return appConfig?.generate?.dir ? appConfig?.generate?.dir : 'dist';
+  } else if (appType === 'vite') {
+    const appConfig = getAppConfig('vite.config.{js,ts}');
+    return appConfig?.build?.outDir ? appConfig?.build?.outDir : 'dist';
+  }
+  return 'dist';
+};
 
 export async function getDb() {
   const config = getConfig();

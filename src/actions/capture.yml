@@ -1,0 +1,32 @@
+name: web3-capture-cronjob
+on:
+  schedule:
+    # Runs "everyday at 00:00 am" (see https://crontab.guru)
+    - cron: '0 0 * * *'
+jobs:
+  capture:
+    name: web3-capture-cronjob
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y libgconf-2-4 libatk1.0-0 libatk-bridge2.0-0 libgdk-pixbuf2.0-0 libgtk-3-0 libgbm-dev libnss3-dev libxss-dev libasound2
+      - name: Install Google Chrome
+        uses: browser-actions/setup-chrome@latest
+        with:
+          chrome-version: stable
+      - run: npm install https://github.com/pawanpaudel93/single-file-cli
+      - name: Capture webpage and screenshot
+        uses: pawanpaudel93/web3-capture-action@v0.1
+        with:
+          web3_token: ${{ secrets.WEB3_STORAGE_TOKEN }}
+          url_file_path: 'urls.txt'
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Saving captured webpage information
+          commit_author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
+          file_pattern: 'saved.json'

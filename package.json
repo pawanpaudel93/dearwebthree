@@ -4,7 +4,6 @@
   "description": "A CLI to deploy web applications to Web3.storage.",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
-  "module": "build/module/index.js",
   "repository": "https://github.com/pawanpaudel93/dearwebthree",
   "license": "MIT",
   "keywords": [
@@ -16,8 +15,7 @@
   ],
   "scripts": {
     "build": "run-p build:*",
-    "build:main": "tsc -p tsconfig.json",
-    "build:module": "tsc -p tsconfig.module.json",
+    "build:main": "tsc -p tsconfig.json && cp src/actions build/main/actions -r",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "fix:lint": "eslint src --ext .ts --fix",
@@ -91,7 +89,7 @@
   },
   "files": [
     "build/main",
-    "build/module",
+    
     "!**/*.spec.*",
     "!**/*.json",
     "CHANGELOG.md",
@@ -107,7 +105,7 @@
       }
     },
     "files": [
-      "!build/module/**"
+      
     ]
   },
   "config": {
@@ -125,7 +123,7 @@
     ]
   },
   "bin": {
-    "dearwebthree": "./build/main/cli.js",
-    "dw3": "./build/main/cli.js"
+    "dearwebthree": "./build/main/index.js",
+    "dw3": "./build/main/index.js"
   }
 }

@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
+import { listFrameworks } from '@netlify/framework-info';
 import glob from 'glob';
 import Moralis from 'moralis';
 import which from 'which';
@@ -94,6 +95,44 @@ export function getChromeExecutablePath() {
     return getChromeExe('Chrome');
   }
 }
+
+function pad(n: string, width: number, z = '0'): string {
+  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}
+
+export function arrayBufferToHexString(buf: Iterable<number>): string {
+  const view = new Uint8Array(buf);
+  const hex = Array.from(view).map((v) => pad(v.toString(16), 2));
+  return hex.join('');
+}
+
+export function checkFileExists(file) {
+  return fs.promises
+    .access(file, fs.constants.F_OK)
+    .then(() => true)
+    .catch(() => false);
+}
+
+export const detectFramework = async () => {
+  const frameworks = await listFrameworks('.');
+  if (frameworks.length > 0) {
+    if (
+      frameworks.length === 2 &&
+      ((/[svelte|vite]/g.test(frameworks[0].id) &&
+        /[svelte|vite]/g.test(frameworks[1].id)) ||
+        (/[svelte-kit|vite]/g.test(frameworks[0].id) &&
+          /[svelte-kit|vite]/g.test(frameworks[1].id)))
+    ) {
+      return 'vite';
+    }
+    return frameworks[0].id;
+  }
+  return '';
+};
+
+export const getFolderName = () => {
+  return path.basename(path.resolve(process.cwd()));
+};
 
 export async function moralisIPFSUpload(
   folderPath: string,
