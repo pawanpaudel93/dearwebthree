@@ -38,6 +38,17 @@ Commands:
   help [command]             display help for command
 ```
 
+### Github Actions Created and Used
+
+1. [add-to-web3](https://github.com/pawanpaudel93/add-to-web3): Github Action forked from [add-to-web3](https://github.com/web3-storage/add-to-web3) to add Moralis support to deploy apps to IPFS & Filecoin.
+
+	-  A demo project using add-to-web3 Github Action: [web3-action-deploy](https://github.com/pawanpaudel93/web3-action-deploy)
+
+2. [w3name-action](https://github.com/pawanpaudel93/w3name-action): Github Action to Publish IPNS name using w3name service.
+
+3. [web3-capture-action](https://github.com/pawanpaudel93/web3-capture-action): Github Action to capture single page html and screenshot of websites and save to Web3.Storage and Moralis.
+	- A demo project using web3-capture-action to capture list of urls and save it to a JSON file: [web3-capture-cronjob](https://github.com/pawanpaudel93/web3-capture-cronjob)
+
 ### Usage
 #### Setup
 
@@ -148,7 +159,7 @@ dearwebthree init-action deployment
 ```
 For capture:
 ```
-dearwebthree init-action deployment
+dearwebthree init-action capture
 ```
 
 ## Author
