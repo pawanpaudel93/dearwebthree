@@ -27,7 +27,7 @@ Options:
   -h, --help                 display help for command
 
 Commands:
-  setup [options] <api-key>  setup Web3.Storage and Moralis API Keys
+  setup                      setup Web3.Storage and Moralis API Keys
   deploy [options]           deploy web app to Web3.Storage and Moralis
   capture [options] <url>    capture url single page webpage, screenshot and metadata to Web3.Storage and Moralis
   backup [options]           backup deployments and captures information
@@ -42,21 +42,17 @@ Commands:
 #### Setup
 
 ```html
-Usage: dearwebthree setup [options] <api-key>
+Usage: dearwebthree setup [options]
 
 setup Web3.Storage and Moralis API Keys
 
-Arguments:
-  api-key                  Web3.Storage or Moralis API Key
-
 Options:
-  -s, --service <service>  select setup service (choices: "web3.storage", "moralis", default: "web3.storage")
-  -h, --help               display help for command
+  -h, --help  display help for command
 ```
+Run the following command and select service and provide API Key for the service.
 
 ```
-dearwebthree setup <Web3.Storage-API_KEY>
-dearwebthree setup <Moralis-API_KEY> -s moralis
+dearwebthree setup
 ```
 
 To display the path where `dearwebthree` config is save:

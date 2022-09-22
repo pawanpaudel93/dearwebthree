@@ -12,19 +12,13 @@ const program = new Command();
 program
   .name(CLI_NAME)
   .description(
-    'A CLI tool to deploy web apps and save captured webpage to IPFS & Filecoin using web3.storage and Moralis'
+    'A CLI tool to deploy web apps and save captured webpage to IPFS & Filecoin using Web3.Storage and Moralis'
   )
   .version(CLI_VERSION, '-v, --version', 'output the version number');
 
 program
   .command('setup')
   .description('setup Web3.Storage and Moralis API Keys')
-  .argument('<api-key>', 'Web3.Storage or Moralis API Key')
-  .addOption(
-    new Option('-s, --service <service>', 'select setup service')
-      .default('web3.storage')
-      .choices(['web3.storage', 'moralis'])
-  )
   .action(setup);
 
 program

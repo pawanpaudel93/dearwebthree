@@ -50,20 +50,44 @@ export function getConfig() {
   });
 }
 
-export const setup = (options: { apiKey: string; service: string }) => {
-  const service = options.service === 'moralis' ? 'Moralis' : 'Web3.Storage';
-  const key = options.service === 'moralis' ? 'moralis' : 'web3Storage';
+export const setup = async () => {
+  const response = await prompts([
+    {
+      type: 'select',
+      name: 'service',
+      message: 'Select a service to setup',
+      choices: [
+        { title: 'Web3.Storage', value: 'web3.storage' },
+        { title: 'Moralis', value: 'moralis' },
+      ],
+    },
+    {
+      type: (prev) =>
+        prev === 'moralis' || prev === 'web3.storage' ? 'text' : null,
+      name: 'apiKey',
+      message: (prev) => `Enter your ${prev} API Key:`,
+      validate: (value) =>
+        typeof value === 'string' && value.trim() !== ''
+          ? true
+          : 'Enter a valid API Key',
+    },
+  ]);
+  if (!response.service) throw Error(`Service is not selected`);
+  if (!response.apiKey)
+    throw Error(`${response.service} API Key is not provided`);
+  const service = response.service === 'moralis' ? 'Moralis' : 'Web3.Storage';
+  const key = response.service === 'moralis' ? 'moralis' : 'web3Storage';
   logger.info(`Setting up ${service} API Key`);
   const config = getConfig();
   const apiKey = config.get('apiKey', undefined);
   if (apiKey) {
     config.set('apiKey', {
       ...(apiKey as { moralis?: string; web3Storage?: string }),
-      [key]: options.apiKey,
+      [key]: response.apiKey,
     });
   } else {
     config.set('apiKey', {
-      [key]: options.apiKey,
+      [key]: response.apiKey,
     });
   }
   logger.info(`${service} API Key is saved`);
@@ -81,17 +105,7 @@ export const checkConfig = async (
 
   if (errors.length > 0) {
     logger.error(chalk.red('-> ') + errors.join('\n' + chalk.red('-> ')));
-    const response = await prompts({
-      type: 'text',
-      name: 'apiKey',
-      message: `Enter your ${service} API Key:`,
-      validate: (value) =>
-        typeof value === 'string' && value.trim() !== ''
-          ? true
-          : 'Enter a valid API Key',
-    });
-    if (!response.apiKey) throw Error(`${service} API Key is not provided`);
-    setup({ apiKey: response.apiKey, service });
+    await setup();
   }
 };
 

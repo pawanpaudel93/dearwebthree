@@ -115,7 +115,7 @@ export const initDeploymentAction = async (service: SERVICE) => {
       logger.info(
         '\n' +
           [
-            '1. Set github action secrets with key WEB3_TOKEN for web3.storage API key',
+            '1. Set github action secrets with key WEB3_TOKEN for Web3.Storage API key',
             '2. Set github action secrets with key W3NAME_SIGNING_KEY for w3name from w3name.json',
           ].join('\n')
       );
@@ -171,7 +171,7 @@ export const initCaptureAction = async (service: SERVICE) => {
     logger.info(
       '\n' +
         [
-          '1. Set github action secrets with key WEB3_TOKEN for web3.storage API key',
+          '1. Set github action secrets with key WEB3_TOKEN for Web3.Storage API key',
         ].join('\n')
     );
     logger.info('Saved successfully');
@@ -186,7 +186,7 @@ export const initAction = async (type: 'deployment' | 'capture') => {
     name: 'service',
     message: 'Select a service',
     choices: [
-      { title: 'web3.storage', value: 'web3.storage' },
+      { title: 'Web3.Storage', value: 'web3.storage' },
       { title: 'Moralis', value: 'moralis' },
     ],
     initial: 0,
