@@ -10,7 +10,7 @@ import { Logger } from 'tslog';
 const jiti = createJITI(__filename);
 
 export const CLI_NAME = 'dearwebthree';
-export const CLI_VERSION = '0.0.1';
+export const CLI_VERSION = '0.0.2';
 
 export type Web3DeployConfig = {
   folderPath: string;
@@ -53,7 +53,7 @@ export function getConfig() {
 export const setup = (options: { apiKey: string; service: string }) => {
   const service = options.service === 'moralis' ? 'Moralis' : 'Web3.Storage';
   const key = options.service === 'moralis' ? 'moralis' : 'web3Storage';
-  logger.info(`Setting up ${service} apiKey`);
+  logger.info(`Setting up ${service} API Key`);
   const config = getConfig();
   const apiKey = config.get('apiKey', undefined);
   if (apiKey) {
@@ -66,7 +66,7 @@ export const setup = (options: { apiKey: string; service: string }) => {
       [key]: options.apiKey,
     });
   }
-  logger.info(`${service} apiKey is saved`);
+  logger.info(`${service} API Key is saved`);
 };
 
 export const checkConfig = async (
@@ -75,17 +75,22 @@ export const checkConfig = async (
 ) => {
   const errors: string[] = [];
   const key = service === 'moralis' ? 'moralis' : 'web3Storage';
-  if (!cliConfig.apiKey[key]) {
-    errors.push(`${service} apiKey is not setup`);
+  if (!cliConfig?.apiKey?.[key]) {
+    errors.push(`${service} API Key is not saved`);
   }
 
   if (errors.length > 0) {
     logger.error(chalk.red('-> ') + errors.join('\n' + chalk.red('-> ')));
     const response = await prompts({
-      type: 'string',
+      type: 'text',
       name: 'apiKey',
       message: `Enter your ${service} API Key:`,
+      validate: (value) =>
+        typeof value === 'string' && value.trim() !== ''
+          ? true
+          : 'Enter a valid API Key',
     });
+    if (!response.apiKey) throw Error(`${service} API Key is not provided`);
     setup({ apiKey: response.apiKey, service });
   }
 };

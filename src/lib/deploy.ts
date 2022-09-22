@@ -111,7 +111,7 @@ const deployWithConfig = async (
         logger.info('Exiting');
         return;
       }
-      logger.error(e?.message ?? e);
+      logger.error(getErrorMessage(e));
     }
   } else {
     logger.error(`Folder path ${cliConfig.folderPath} does not exist`);
@@ -137,8 +137,7 @@ export const deploy = async (options: { build: boolean; service: string }) => {
     }
     await deployWithConfig(cliConfig, isMoralis);
   } catch (e) {
-    console.log(e);
-    logger.error(e?.message ?? e);
+    logger.error(getErrorMessage(e));
   }
 };
 

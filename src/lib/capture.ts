@@ -62,13 +62,12 @@ export const captureUrl = async (
       title,
     };
   } catch (error) {
-    console.error(error);
     if (tempDirectory) {
       await fsPromises.rm(tempDirectory, { recursive: true, force: true });
     }
     return {
       status: 'error',
-      message: error.message,
+      message: getErrorMessage(error),
       contentID: '',
       title: '',
     };

@@ -146,6 +146,7 @@ export const initCaptureAction = async (service: SERVICE) => {
           ? true
           : 'Cron Expression is Required',
     });
+    if (!response.value) throw Error(`Cron Expression is Required!!!`);
     logger.info('Saving Capture github action...');
     const savePath = '.github/workflows/';
     let CAPTURE_ACTION = (
