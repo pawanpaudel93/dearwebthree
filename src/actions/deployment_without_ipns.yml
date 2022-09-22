@@ -52,11 +52,12 @@ jobs:
           environment: production
 
       - name: Deploy to Web3
-        uses: web3-storage/add-to-web3@v2
+        uses: pawanpaudel93/add-to-web3@v0.1
         id: web3
         with:
-          web3_token: ${{ secrets.WEB3_STORAGE_TOKEN }}
+          web3_token: ${{ secrets.WEB3_TOKEN }}
           path_to_add: DEPLOYMENT_FOLDER
+          service: SERVICE
 
       - name: Update deployment status (success)
         if: success()

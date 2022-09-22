@@ -16,6 +16,8 @@ import {
 } from './utils';
 
 const W3NAME_JSON = 'w3name.json';
+const GITIGNORE = '.gitignore';
+type SERVICE = 'moralis' | 'web3.storage';
 
 export const createName = async () => {
   try {
@@ -41,7 +43,26 @@ export const createName = async () => {
   }
 };
 
-export const initDeploymentAction = async () => {
+const updateGitIgnore = async () => {
+  try {
+    if (!(await checkFileExists('.gitignore'))) {
+      await fsPromises.writeFile(GITIGNORE, 'w3name.json');
+    } else {
+      const gitIgnoreContent = await (
+        await fsPromises.readFile(GITIGNORE)
+      ).toString();
+      if (!/w3name\.json/g.test(gitIgnoreContent)) {
+        await fsPromises.writeFile(GITIGNORE, '\nw3name.json', {
+          flag: 'a+',
+        });
+      }
+    }
+  } catch (error) {
+    logger.error(getErrorMessage(error));
+  }
+};
+
+export const initDeploymentAction = async (service: SERVICE) => {
   try {
     const response = await prompts({
       type: 'confirm',
@@ -78,7 +99,9 @@ export const initDeploymentAction = async () => {
     DEPLOYMENT_ACTION = DEPLOYMENT_ACTION.replace(
       /DEPLOYMENT_FOLDER/g,
       buildFolder
-    ).replace(/PROJECT_NAME/g, getFolderName());
+    )
+      .replace(/PROJECT_NAME/g, getFolderName())
+      .replace(/SERVICE/g, service);
     if (!(await checkFileExists(savePath))) {
       await fsPromises.mkdir(savePath, {
         recursive: true,
@@ -88,10 +111,11 @@ export const initDeploymentAction = async () => {
 
     if (response.isIPNS) {
       await createName();
+      await updateGitIgnore();
       logger.info(
         '\n' +
           [
-            '1. Set github action secrets with key WEB3_STORAGE_TOKEN for web3.storage API key',
+            '1. Set github action secrets with key WEB3_TOKEN for web3.storage API key',
             '2. Set github action secrets with key W3NAME_SIGNING_KEY for w3name from w3name.json',
           ].join('\n')
       );
@@ -99,7 +123,7 @@ export const initDeploymentAction = async () => {
       logger.info(
         '\n' +
           [
-            '1. Set github action secrets with key WEB3_STORAGE_TOKEN for web3.storage API key',
+            '1. Set github action secrets with key WEB3_TOKEN for web3.storage API key',
           ].join('\n')
       );
     }
@@ -109,7 +133,7 @@ export const initDeploymentAction = async () => {
   }
 };
 
-export const initCaptureAction = async () => {
+export const initCaptureAction = async (service: SERVICE) => {
   try {
     const response = await prompts({
       type: 'text',
@@ -138,12 +162,15 @@ export const initCaptureAction = async () => {
         recursive: true,
       });
     }
-    CAPTURE_ACTION = CAPTURE_ACTION.replace(/CRON_EXPRESSION/g, response.value);
+    CAPTURE_ACTION = CAPTURE_ACTION.replace(
+      /CRON_EXPRESSION/g,
+      response.value
+    ).replace(/SERVICE/g, service);
     await fsPromises.writeFile(savePath + 'capture.yml', CAPTURE_ACTION);
     logger.info(
       '\n' +
         [
-          '1. Set github action secrets with key WEB3_STORAGE_TOKEN for web3.storage API key',
+          '1. Set github action secrets with key WEB3_TOKEN for web3.storage API key',
         ].join('\n')
     );
     logger.info('Saved successfully');
@@ -153,9 +180,19 @@ export const initCaptureAction = async () => {
 };
 
 export const initAction = async (type: 'deployment' | 'capture') => {
+  const response = await prompts({
+    type: 'select',
+    name: 'service',
+    message: 'Select a service',
+    choices: [
+      { title: 'web3.storage', value: 'web3.storage' },
+      { title: 'Moralis', value: 'moralis' },
+    ],
+    initial: 0,
+  });
   if (type === 'deployment') {
-    await initDeploymentAction();
+    await initDeploymentAction(response.service);
   } else if (type === 'capture') {
-    await initCaptureAction();
+    await initCaptureAction(response.service);
   }
 };

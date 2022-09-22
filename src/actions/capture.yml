@@ -21,10 +21,11 @@ jobs:
           chrome-version: stable
       - run: npm install https://github.com/pawanpaudel93/single-file-cli
       - name: Capture webpage and screenshot
-        uses: pawanpaudel93/web3-capture-action@v0.1
+        uses: pawanpaudel93/web3-capture-action@v0.2
         with:
-          web3_token: ${{ secrets.WEB3_STORAGE_TOKEN }}
+          web3_token: ${{ secrets.WEB3_TOKEN }}
           url_file_path: 'urls.txt'
+          service: SERVICE
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Saving captured webpage information
