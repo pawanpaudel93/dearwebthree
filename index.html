@@ -64,10 +64,8 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<a href="#dearwebthree" id="dearwebthree" style="color: inherit; text-decoration: none;">
-					<h1>dearwebthree</h1>
-				</a>
-				<p>A CLI to deploy and archive apps to Web3.storage.</p>
+				<h1 align="center">dearwebthree</h1>
+				<p>A CLI tool to deploy web apps and save captured webpage to IPFS &amp; Filecoin using <a href="https://web3.storage">Web3.Storage</a> and <a href="https://moralis.io/">Moralis</a></p>
 				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
 					<h3>Installation</h3>
 				</a>
@@ -76,21 +74,149 @@
 				<p>OR</p>
 				<pre><code><span class="hljs-symbol">yarn</span> <span class="hljs-keyword">add</span> <span class="hljs-meta">global</span> dearwebthree
 </code></pre>
-				<blockquote>
-					<p>Currently supported are the applications using <code>React</code>, <code>Next</code>, <code>Vue</code>, <code>Nuxt</code> and <code>Vite</code>.</p>
-				</blockquote>
 				<p>Run <code>dearwebthree</code> or <code>dw3</code> in terminal for more information regarding how to use the CLI.</p>
-				<a href="#setup" id="setup" style="color: inherit; text-decoration: none;">
-					<h3>Setup</h3>
+				<pre><code class="language-html">$ dw3
+Usage: dearwebthree [options] [command]
+
+A CLI tool to deploy web apps and save captured webpage to IPFS &amp; Filecoin using web3.storage and Moralis
+
+Options:
+  -v, --version              output the version number
+  -h, --help                 display help for command
+
+Commands:
+  setup                      setup Web3.Storage and Moralis API Keys
+  deploy [options]           deploy web app to Web3.Storage and Moralis
+  capture [options] <span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>    capture url single page webpage, screenshot and metadata to Web3.Storage and Moralis
+  backup [options]           backup deployments and captures information
+  init-action <span class="hljs-tag">&lt;<span class="hljs-name">type</span>&gt;</span>         initialize deployment or capture github action
+  deployments                display all your deployments
+  captures                   display all your captures
+  config-path                display config path
+  help [command]             display help for command
+</code></pre>
+				<a href="#github-actions-created-and-used" id="github-actions-created-and-used" style="color: inherit; text-decoration: none;">
+					<h3>Github Actions Created and Used</h3>
 				</a>
-				<pre><code>dearwebthree setup --apiKey <span class="hljs-string">&quot;&lt;Web3.Storage_API_KEY&gt;&quot;</span>
+				<ol>
+					<li><p><a href="https://github.com/pawanpaudel93/add-to-web3">add-to-web3</a>: Github Action forked from <a href="https://github.com/web3-storage/add-to-web3">add-to-web3</a> to add Moralis support to deploy apps to IPFS &amp; Filecoin.</p>
+						<ul>
+							<li> A demo project using add-to-web3 Github Action: <a href="https://github.com/pawanpaudel93/web3-action-deploy">web3-action-deploy</a></li>
+						</ul>
+					</li>
+					<li><p><a href="https://github.com/pawanpaudel93/w3name-action">w3name-action</a>: Github Action to Publish IPNS name using w3name service.</p>
+					</li>
+					<li><p><a href="https://github.com/pawanpaudel93/web3-capture-action">web3-capture-action</a>: Github Action to capture single page html and screenshot of websites and save to Web3.Storage and Moralis.</p>
+						<ul>
+							<li>A demo project using web3-capture-action to capture list of urls and save it to a JSON file: <a href="https://github.com/pawanpaudel93/web3-capture-cronjob">web3-capture-cronjob</a></li>
+						</ul>
+					</li>
+				</ol>
+				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+					<h3>Usage</h3>
+				</a>
+				<a href="#setup" id="setup" style="color: inherit; text-decoration: none;">
+					<h4>Setup</h4>
+				</a>
+				<pre><code class="language-html">Usage: dearwebthree setup [options]
+
+setup Web3.Storage and Moralis API Keys
+
+Options:
+  -h, --help  display help for command
+</code></pre>
+				<p>Run the following command and select service and provide API Key for the service.</p>
+				<pre><code>dearwebthree setup
+</code></pre>
+				<p>To display the path where <code>dearwebthree</code> config is save:</p>
+				<pre><code>dearwebthree <span class="hljs-built_in">config</span>-<span class="hljs-built_in">path</span>
 </code></pre>
 				<a href="#deploy" id="deploy" style="color: inherit; text-decoration: none;">
-					<h3>Deploy</h3>
+					<h4>Deploy</h4>
 				</a>
-				<p>Run this command in the app folder to deploy the app.</p>
+				<blockquote>
+					<p>Currently supported are the applications using <code>React</code>, <code>Next</code>, <code>Vue</code>, <code>Nuxt</code>, <code>Svelte-Kit</code> and <code>Vite</code>.</p>
+				</blockquote>
+				<pre><code class="language-html">Usage: dearwebthree deploy [options]
+
+deploy web app to Web3.Storage and Moralis
+
+Options:
+  -n, --no-build           deploy without building the app if it is already build
+  -s, --service <span class="hljs-tag">&lt;<span class="hljs-name">service</span>&gt;</span>  select service (choices: &quot;web3.storage&quot;, &quot;moralis&quot;, default: &quot;web3.storage&quot;)
+  -h, --help               display help for command
+</code></pre>
+				<p>Run this command in the app folder to deploy the app to Web3.Storage or use service option to select the service you are deploying to.</p>
 				<pre><code><span class="hljs-attribute">dearwebthree deploy</span>
 </code></pre>
+				<p>Or with desired service,</p>
+				<pre><code><span class="hljs-attribute">dearwebthree deploy -s moralis</span>
+</code></pre>
+				<p>If you already build the project already and don&#39;t want cli to build again then run the command below:</p>
+				<pre><code>dearwebthree <span class="hljs-keyword">deploy</span> <span class="hljs-params">--no-build</span>
+</code></pre>
+				<p>To display all the deployments made:</p>
+				<pre><code><span class="hljs-attribute">dearwebthree deployments</span>
+</code></pre>
+				<a href="#capture" id="capture" style="color: inherit; text-decoration: none;">
+					<h4>Capture</h4>
+				</a>
+				<pre><code class="language-html">Usage: dearwebthree capture [options] <span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>
+
+capture url single page webpage, screenshot and metadata to Web3.Storage and Moralis
+
+Arguments:
+  url                      capture url to Web3.Storage or Moralis
+
+Options:
+  -s, --service <span class="hljs-tag">&lt;<span class="hljs-name">service</span>&gt;</span>  select service (choices: &quot;web3.storage&quot;, &quot;moralis&quot;, default: &quot;web3.storage&quot;)
+  -h, --help               display help for command
+</code></pre>
+				<p>Run this command to save single page html and screenshot for the given url with default service as web3.storage. Use service option for selecting desired ones.</p>
+				<pre><code>dearwebthree capture https:<span class="hljs-regexp">//</span>web3.storage
+</code></pre>
+				<p>Or with desired service,</p>
+				<pre><code>dearwebthree capture https:<span class="hljs-regexp">//</span>web3.storage -s moralis
+</code></pre>
+				<p>To display all the captures made:</p>
+				<pre><code><span class="hljs-attribute">dearwebthree captures</span>
+</code></pre>
+				<a href="#github-actions-for-deployment-and-capture" id="github-actions-for-deployment-and-capture" style="color: inherit; text-decoration: none;">
+					<h4>Github Actions for Deployment and Capture</h4>
+				</a>
+				<pre><code class="language-html">Usage: dearwebthree init-action [options] <span class="hljs-tag">&lt;<span class="hljs-name">type</span>&gt;</span>
+
+initialize deployment or capture github action
+
+Arguments:
+  type        type of github action to initialize (choices: &quot;capture&quot;, &quot;deployment&quot;)
+
+Options:
+  -h, --help  display help for command
+</code></pre>
+				<p>Run the following commands to initialize capture and deplyment github actions for your project.
+				For deployment:</p>
+				<pre><code>dearwebthree <span class="hljs-keyword">init</span>-action deployment
+</code></pre>
+				<p>For capture:</p>
+				<pre><code>dearwebthree <span class="hljs-keyword">init</span>-action capture
+</code></pre>
+				<a href="#author" id="author" style="color: inherit; text-decoration: none;">
+					<h2>Author</h2>
+				</a>
+				<p>👤 <strong>Pawan Paudel</strong></p>
+				<ul>
+					<li>Github: <a href="https://github.com/pawanpaudel93">@pawanpaudel93</a></li>
+				</ul>
+				<a href="#🤝-contributing" id="🤝-contributing" style="color: inherit; text-decoration: none;">
+					<h2>🤝 Contributing</h2>
+				</a>
+				<p>Contributions, issues and feature requests are welcome!<br />Feel free to check <a href="https://github.com/pawanpaudel93/dearwebthree/issues">issues page</a>.</p>
+				<a href="#show-your-support" id="show-your-support" style="color: inherit; text-decoration: none;">
+					<h2>Show your support</h2>
+				</a>
+				<p>Give a ⭐️ if this project helped you!</p>
+				<p>Copyright © 2022 <a href="https://github.com/pawanpaudel93">Pawan Paudel</a>.<br /></p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -104,6 +230,15 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#errorwithmessage" class="tsd-kind-icon">Error<wbr>With<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#service" class="tsd-kind-icon">SERVICE</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#web3captureconfig" class="tsd-kind-icon">Web3<wbr>Capture<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#web3deployconfig" class="tsd-kind-icon">Web3<wbr>Deploy<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-variable">
@@ -111,6 +246,12 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#cli_version" class="tsd-kind-icon">CLI_<wbr>VERSION</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#gitignore" class="tsd-kind-icon">GITIGNORE</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#w3name_json" class="tsd-kind-icon">W3NAME_<wbr>JSON</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#jiti" class="tsd-kind-icon">jiti</a>
@@ -122,13 +263,34 @@
 						<a href="globals.html#program" class="tsd-kind-icon">program</a>
 					</li>
 					<li class=" tsd-kind-function">
+						<a href="globals.html#arraybuffertohexstring" class="tsd-kind-icon">array<wbr>Buffer<wbr>ToHex<wbr>String</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#backup" class="tsd-kind-icon">backup</a>
+					</li>
+					<li class=" tsd-kind-function">
 						<a href="globals.html#buildapp" class="tsd-kind-icon">build<wbr>App</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#buildconfig" class="tsd-kind-icon">build<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-function">
+						<a href="globals.html#capture" class="tsd-kind-icon">capture</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#captureurl" class="tsd-kind-icon">capture<wbr>Url</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#captures" class="tsd-kind-icon">captures</a>
+					</li>
+					<li class=" tsd-kind-function">
 						<a href="globals.html#checkconfig" class="tsd-kind-icon">check<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#checkfileexists" class="tsd-kind-icon">check<wbr>File<wbr>Exists</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createname" class="tsd-kind-icon">create<wbr>Name</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#deploy" class="tsd-kind-icon">deploy</a>
@@ -146,16 +308,79 @@
 						<a href="globals.html#getappconfig" class="tsd-kind-icon">get<wbr>App<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-function">
+						<a href="globals.html#getbin" class="tsd-kind-icon">get<wbr>Bin</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getchromedarwin" class="tsd-kind-icon">get<wbr>Chrome<wbr>Darwin</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getchromeexe" class="tsd-kind-icon">get<wbr>Chrome<wbr>Exe</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getchromeexecutablepath" class="tsd-kind-icon">get<wbr>Chrome<wbr>Executable<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-function">
 						<a href="globals.html#getconfig" class="tsd-kind-icon">get<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#getdb" class="tsd-kind-icon">get<wbr>Db</a>
 					</li>
 					<li class=" tsd-kind-function">
+						<a href="globals.html#getdbdata" class="tsd-kind-icon">get<wbr>DbData</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getdeploymentfolder" class="tsd-kind-icon">get<wbr>Deployment<wbr>Folder</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#geterrormessage" class="tsd-kind-icon">get<wbr>Error<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getfoldername" class="tsd-kind-icon">get<wbr>Folder<wbr>Name</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#initaction" class="tsd-kind-icon">init<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#initcaptureaction" class="tsd-kind-icon">init<wbr>Capture<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#initdeploymentaction" class="tsd-kind-icon">init<wbr>Deployment<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#iserrorwithmessage" class="tsd-kind-icon">is<wbr>Error<wbr>With<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#moralisipfsdeploy" class="tsd-kind-icon">moralisIPFSDeploy</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#moralisipfsupload" class="tsd-kind-icon">moralisIPFSUpload</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#pad" class="tsd-kind-icon">pad</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#parsecookies" class="tsd-kind-icon">parse<wbr>Cookies</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#run" class="tsd-kind-icon">run</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#runbrowser" class="tsd-kind-icon">run<wbr>Browser</a>
+					</li>
+					<li class=" tsd-kind-function">
 						<a href="globals.html#runcommand" class="tsd-kind-icon">run<wbr>Command</a>
 					</li>
 					<li class=" tsd-kind-function">
+						<a href="globals.html#savetolocal" class="tsd-kind-icon">save<wbr>ToLocal</a>
+					</li>
+					<li class=" tsd-kind-function">
 						<a href="globals.html#setup" class="tsd-kind-icon">setup</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#toerrorwithmessage" class="tsd-kind-icon">to<wbr>Error<wbr>With<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#updategitignore" class="tsd-kind-icon">update<wbr>Git<wbr>Ignore</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#web3storagedeploy" class="tsd-kind-icon">web3<wbr>Storage<wbr>Deploy</a>
