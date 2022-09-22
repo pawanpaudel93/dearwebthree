@@ -1,6 +1,5 @@
-# dearwebthree
-
-A CLI to deploy and capture apps to Web3.storage.
+<h1 align="center">dearwebthree</h1>
+<p align="center">A CLI tool to deploy web apps and save captured webpage to IPFS & Filecoin using (Web3.Storage)[https://web3.storage] and (Moralis)[https://moralis.io/].</p>
 
 ### Installation
 ```
@@ -12,22 +11,160 @@ OR
 ```
 yarn add global dearwebthree
 ```
-> Currently supported are the applications using `React`, `Next`, `Vue`, `Nuxt`, `Svelte-Kit` and `Vite`.
 
 Run `dearwebthree` or `dw3` in terminal for more information regarding how to use the CLI.
 
-### Setup
+```html
+$ dw3
+Usage: dearwebthree [options] [command]
+
+A CLI tool to deploy web apps and save captured webpage to IPFS & Filecoin using web3.storage and Moralis
+
+Options:
+  -v, --version              output the version number
+  -h, --help                 display help for command
+
+Commands:
+  setup [options] <api-key>  setup Web3.Storage and Moralis API Keys
+  deploy [options]           deploy web app to Web3.Storage and Moralis
+  capture [options] <url>    capture url single page webpage, screenshot and metadata to Web3.Storage and Moralis
+  backup [options]           backup deployments and captures information
+  init-action <type>         initialize deployment or capture github action
+  deployments                display all your deployments
+  captures                   display all your captures
+  config-path                display config path
+  help [command]             display help for command
 ```
-dearwebthree setup --apiKey "<Web3.Storage_API_KEY>"
+
+### Usage
+#### Setup
+
+```html
+Usage: dearwebthree setup [options] <api-key>
+
+setup Web3.Storage and Moralis API Keys
+
+Arguments:
+  api-key                  Web3.Storage or Moralis API Key
+
+Options:
+  -s, --service <service>  select setup service (choices: "web3.storage", "moralis", default: "web3.storage")
+  -h, --help               display help for command
 ```
-### Deploy
-Run this command in the app folder to deploy the app.
+
+```
+dearwebthree setup <Web3.Storage-API_KEY>
+dearwebthree setup <Moralis-API_KEY> -s moralis
+```
+
+To display the path where `dearwebthree` config is save:
+```
+dearwebthree config-path
+```
+
+#### Deploy
+> Currently supported are the applications using `React`, `Next`, `Vue`, `Nuxt`, `Svelte-Kit` and `Vite`.
+
+```html
+Usage: dearwebthree deploy [options]
+
+deploy web app to Web3.Storage and Moralis
+
+Options:
+  -n, --no-build           deploy without building the app if it is already build
+  -s, --service <service>  select service (choices: "web3.storage", "moralis", default: "web3.storage")
+  -h, --help               display help for command
+
+```
+
+Run this command in the app folder to deploy the app to Web3.Storage or use service option to select the service you are deploying to.
+
 ```
 dearwebthree deploy
 ```
+Or with desired service,
+```
+dearwebthree deploy -s moralis
+```
 
-### Capture
-Run this command to save single page html and screenshot for the given url.
+If you already build the project already and don't want cli to build again then run the command below:
 ```
-dearwebthree capture <url>
+dearwebthree deploy --no-build
 ```
+
+To display all the deployments made:
+```
+dearwebthree deployments
+```
+
+#### Capture
+
+```html
+Usage: dearwebthree capture [options] <url>
+
+capture url single page webpage, screenshot and metadata to Web3.Storage and Moralis
+
+Arguments:
+  url                      capture url to Web3.Storage or Moralis
+
+Options:
+  -s, --service <service>  select service (choices: "web3.storage", "moralis", default: "web3.storage")
+  -h, --help               display help for command
+
+```
+
+Run this command to save single page html and screenshot for the given url with default service as web3.storage. Use service option for selecting desired ones.
+
+```
+dearwebthree capture https://web3.storage
+```
+Or with desired service,
+```
+dearwebthree capture https://web3.storage -s moralis
+```
+
+To display all the captures made:
+```
+dearwebthree captures
+```
+
+#### Github Actions for Deployment and Capture
+
+```html
+Usage: dearwebthree init-action [options] <type>
+
+initialize deployment or capture github action
+
+Arguments:
+  type        type of github action to initialize (choices: "capture", "deployment")
+
+Options:
+  -h, --help  display help for command
+
+```
+
+Run the following commands to initialize capture and deplyment github actions for your project.
+For deployment:
+```
+dearwebthree init-action deployment
+```
+For capture:
+```
+dearwebthree init-action deployment
+```
+
+## Author
+
+👤 **Pawan Paudel**
+
+- Github: [@pawanpaudel93](https://github.com/pawanpaudel93)
+
+## 🤝 Contributing
+
+Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/pawanpaudel93/dearwebthree/issues).
+
+## Show your support
+
+Give a ⭐️ if this project helped you!
+
+Copyright © 2022 [Pawan Paudel](https://github.com/pawanpaudel93).<br />

@@ -145,7 +145,7 @@ export const deploy = async (options: { build: boolean; service: string }) => {
 export const deployments = async () => {
   try {
     const data = await getDbData('deployments');
-    logger.info(data);
+    logger.info(data[0]);
   } catch (error) {
     logger.info(getErrorMessage(error));
   }

@@ -113,7 +113,7 @@ export const capture = async (url: string, options: { service: string }) => {
 export const captures = async () => {
   try {
     const data = await getDbData('captures');
-    logger.info(data);
+    logger.info(data[0]);
   } catch (error) {
     logger.info(getErrorMessage(error));
   }

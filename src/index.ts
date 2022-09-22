@@ -12,14 +12,14 @@ const program = new Command();
 program
   .name(CLI_NAME)
   .description(
-    'A CLI tool to deploy web apps to IPFS & Filecoin using web3.storage and Moralis'
+    'A CLI tool to deploy web apps and save captured webpage to IPFS & Filecoin using web3.storage and Moralis'
   )
   .version(CLI_VERSION, '-v, --version', 'output the version number');
 
 program
   .command('setup')
-  .description('setup web3.storage and Moralis API Keys')
-  .argument('<api-key>', 'web3.storage or Moralis API Key')
+  .description('setup Web3.Storage and Moralis API Keys')
+  .argument('<api-key>', 'Web3.Storage or Moralis API Key')
   .addOption(
     new Option('-s, --service <service>', 'select setup service')
       .default('web3.storage')
@@ -38,13 +38,15 @@ program
       .default('web3.storage')
       .choices(['web3.storage', 'moralis'])
   )
-  .description('deploy web app to web3.storage')
+  .description('deploy web app to Web3.Storage and Moralis')
   .action(deploy);
 
 program
   .command('capture')
-  .description('capture url single page webpage, screenshot and metadata')
-  .argument('<url>', 'capture url to web3.storage or moralis')
+  .description(
+    'capture url single page webpage, screenshot and metadata to Web3.Storage and Moralis'
+  )
+  .argument('<url>', 'capture url to Web3.Storage or Moralis')
   .addOption(
     new Option('-s, --service <service>', 'select service')
       .default('web3.storage')
@@ -76,20 +78,20 @@ program
 
 program
   .command('deployments')
-  .description('print all your deployments')
+  .description('display all your deployments')
   .action(deployments);
 
 program
   .command('captures')
-  .description('print all your captures')
+  .description('display all your captures')
   .action(captures);
 
 program
   .command('config-path')
-  .description('print config path')
+  .description('display config path')
   .action(() => {
     const config = getConfig();
-    logger.info('Config path: ' + config.path);
+    logger.info(`Config path: ${config.path}`);
   });
 
 program.parse(process.argv);
