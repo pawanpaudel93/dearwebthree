@@ -1,5 +1,7 @@
 <h1 align="center">dearwebthree</h1>
-<p align="center">A CLI tool to deploy web apps and save captured webpage to IPFS & Filecoin using (Web3.Storage)[https://web3.storage] and (Moralis)[https://moralis.io/].</p>
+
+A CLI tool to deploy web apps and save captured webpage to IPFS & Filecoin using [Web3.Storage](https://web3.storage) and [Moralis](https://moralis.io/)
+
 
 ### Installation
 ```
