@@ -2,8 +2,18 @@
 
 A CLI tool to deploy web apps and save captured webpage to IPFS & Filecoin using [Web3.Storage](https://web3.storage) and [Moralis](https://moralis.io/)
 
-
-### Installation
+- [Installation](#installation)
+- [Github Actions Created and Used](#github-actions-created-and-used)
+- [Usage](#usage)
+  - [Setup](#setup)
+  - [Deploy](#deploy)
+    - [Deployment Note](#deployment-note)
+  - [Capture](#capture)
+  - [Github Actions for Deployment and Capture](#github-actions-for-deployment-and-capture)
+- [Author](#author)
+- [🤝 Contributing](#-contributing)
+- [Show your support](#show-your-support)
+## Installation
 ```
 npm install dearwebthree -g
 ```
@@ -38,7 +48,7 @@ Commands:
   help [command]             display help for command
 ```
 
-### Github Actions Created and Used
+## Github Actions Created and Used
 
 1. [add-to-web3](https://github.com/pawanpaudel93/add-to-web3): Github Action forked from [add-to-web3](https://github.com/web3-storage/add-to-web3) to add Moralis support to deploy apps to IPFS & Filecoin.
 
@@ -49,8 +59,8 @@ Commands:
 3. [web3-capture-action](https://github.com/pawanpaudel93/web3-capture-action): Github Action to capture single page html and screenshot of websites and save to Web3.Storage and Moralis.
 	- A demo project using web3-capture-action to capture list of urls and save it to a JSON file: [web3-capture-cronjob](https://github.com/pawanpaudel93/web3-capture-cronjob)
 
-### Usage
-#### Setup
+## Usage
+### Setup
 
 ```html
 Usage: dearwebthree setup [options]
@@ -71,10 +81,10 @@ To display the path where `dearwebthree` config is save:
 dearwebthree config-path
 ```
 
-#### Deploy
+### Deploy
 > Currently supported are the applications using `React`, `Next`, `Vue`, `Nuxt`, `Svelte-Kit` and `Vite`.
 
-##### Deployment Note
+#### Deployment Note
 Use hash router for each of the above supported frameworks and libraries for better routing support. For Next.js there is no hash router, so use `trailingSlash: true` in nextConfig for better routing support so that routes can also be accessed on reload too.
 
 
@@ -110,7 +120,7 @@ To display all the deployments made:
 dearwebthree deployments
 ```
 
-#### Capture
+### Capture
 
 ```html
 Usage: dearwebthree capture [options] <url>
@@ -141,7 +151,7 @@ To display all the captures made:
 dearwebthree captures
 ```
 
-#### Github Actions for Deployment and Capture
+### Github Actions for Deployment and Capture
 
 ```html
 Usage: dearwebthree init-action [options] <type>
