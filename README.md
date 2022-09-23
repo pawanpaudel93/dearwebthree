@@ -74,6 +74,10 @@ dearwebthree config-path
 #### Deploy
 > Currently supported are the applications using `React`, `Next`, `Vue`, `Nuxt`, `Svelte-Kit` and `Vite`.
 
+##### Deployment Note
+Use hash router for each of the above supported frameworks and libraries for better routing support. For Next.js there is no hash router, so use `trailingSlash: true` in nextConfig for better routing support so that routes can also be accessed on reload too.
+
+
 ```html
 Usage: dearwebthree deploy [options]
 
